@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 webhook_url = os.getenv("DISCORD_WEBHOOK")
-macro_url = "https://trigger.macrodroid.com/eb0021e1-7a69-45c7-aa90-1a5b489b2e7e/eqinfo"
+macro_url = os.getenv("MACRO_WEBHOOK")
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
