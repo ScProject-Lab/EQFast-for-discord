@@ -168,30 +168,23 @@ async def wsconnect(name, url):
                             }
 
                             maxscale = ms[maxscale_raw]
+
                             if hyponame == "":
                                 hyponame = "None"
 
                             if magnitude == "-1":
                                 magnitude = "None"
 
-                            # 津波に関する説明(汚コード直したい)
-                            if tsunami == "None":
-                                tsunami_info = "この地震による津波の心配はありません。"
+                            tsunamistr = {
+                                "None": "この地震による津波の心配はありません。",
+                                "Unknown": "津波に関する情報は不明です。",
+                                "Checking": "現在津波の情報を調査中です。",
+                                "NonEffective": "若干の海面変動があるかも知れませんが、被害の心配はありません。",
+                                "Watch": "現在、津波注意報が発表されています。",
+                                "Warning": "現在、津波予報等を発表中です。"
+                            }
 
-                            elif tsunami == "Unknown":
-                                tsunami_info = "津波に関する情報は不明です。"
-
-                            elif tsunami == "Checking":
-                                tsunami_info = "現在津波の情報を調査中です。"
-
-                            elif tsunami == "NonEffective":
-                                tsunami_info = "若干の海面変動があるかも知れませんが、被害の心配はありません。"
-
-                            elif tsunami == "Watch":
-                                tsunami_info = "現在、津波注意報が発表されています。"
-
-                            elif tsunami == "Warning":
-                                tsunami_info = "現在、津波予報等を発表中です。"
+                            tsunami_info = tsunamistr[tsunami]
 
                             message = {
                                 "embeds": [
@@ -236,6 +229,8 @@ async def wsconnect(name, url):
                             }
 
                             line_send_data = f"---地震情報---\n{time}頃、{hyponame}で地震がありました。{tsunami_info}\n\n震源  {hyponame}\n最大震度  {maxscale}\n深さ  {depth}km\nM {magnitude}\n\n【各地の震度】\n開発中\n\nソース {source}\n[試験自動送信中]"
+                            # LINEに送信失敗したときの手動コピペ送信用
+                            print(line_send_data)
 
                             headers = {"Content-Type": "application/json; charset=utf-8"}
 
