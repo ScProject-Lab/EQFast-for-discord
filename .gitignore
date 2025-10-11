@@ -1,0 +1,15 @@
+.env
+# Java / Gradle
+/build/
+/out/
+/.gradle/
+/.idea/
+*.class
+*.log
+
+# Node.js（もしあれば）
+/node_modules/
+
+# OS関連
+.DS_Store
+Thumbs.db
