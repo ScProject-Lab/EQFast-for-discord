@@ -273,7 +273,7 @@ if __name__ == "__main__":
     try:
         loop.run_until_complete(main())
     except KeyboardInterrupt:
-        logger.info("KeyboardInterrupt 受信、シャットダウン開始")
+        logger.info("SHUTDOWN")
         tasks = asyncio.all_tasks(loop)
         for t in tasks:
             t.cancel()
@@ -281,4 +281,4 @@ if __name__ == "__main__":
         loop.run_until_complete(asyncio.gather(*tasks, return_exceptions=True))
     finally:
         loop.close()
-        logger.info("正常に終了しました")
+        logger.info("SHUTDOWN FINISHED")
