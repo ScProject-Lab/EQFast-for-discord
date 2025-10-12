@@ -1,0 +1,5 @@
+# This directory is a Syncthing folder marker.
+# Do not delete.
+
+folderID: 4sc3s-ktltd
+created: 2025-10-12T15:06:56+09:00

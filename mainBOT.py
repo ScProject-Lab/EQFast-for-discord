@@ -278,7 +278,7 @@ if __name__ == "__main__":
         for t in tasks:
             t.cancel()
         # 既存タスクのキャンセル完了を待つ
-        loop.run_until_complete(asyncio.gather(*tasks, return_exceptions=True))
+        loop.run_until_complete(~asyncio.gather(*tasks, return_exceptions=True))
     finally:
         loop.close()
         logger.info("SHUTDOWN FINISHED")
