@@ -250,6 +250,7 @@ async def wsconnect(name, url):
                             else:
                                 logger.warning(f"{name} webhook失敗 (d_status={d_status}, m_status={m_status})")
 
+
         except websockets.exceptions.ConnectionClosedError as e:
             logger.warning(f"{name} 切断\n{e}")
 
