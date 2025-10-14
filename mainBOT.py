@@ -33,15 +33,15 @@ async def wsconnect(name, url):
     while True:
         try:
             async with websockets.connect(url) as websocket:
-                logger.info(f"{name} 接続")
+                logger.info(f"{name} connected")
                 async for message in websocket:
                     try:
                         jsondata = json.loads(message)
                     except json.JSONDecodeError as e:
-                        logger.error(f"{name} JSONパース失敗\n{e}")
+                        logger.error(f"{name} JSON parse error\n{e}")
                         continue
 
-                    logger.debug(f"{name} データ受信")
+                    logger.debug(f"{name} data received: {jsondata}")
 
                     if name == "wolfx":
                         type = jsondata.get("type", "不明")
@@ -96,9 +96,9 @@ async def wsconnect(name, url):
 
                                 # Responseが200-299なら成功
                                 if 200 <= status < 300:
-                                    logger.info(f"{name} Discord webhook成功")
+                                    logger.info(f"{name} Discord webhook finished")
                                 else:
-                                    logger.warning(f"{name} Discord webhook失敗 (status={status})")
+                                    logger.warning(f"{name} Discord webhook failed (status={status})")
 
                             else:
                                 Title = f"{Title} 第{Serial}報"
@@ -137,9 +137,9 @@ async def wsconnect(name, url):
 
                                 # Responseが200-299なら成功
                                 if 200 <= status < 300:
-                                    logger.info(f"{name} Discord webhook成功")
+                                    logger.info(f"{name} Discord webhook finished")
                                 else:
-                                    logger.warning(f"{name} Discord webhook失敗 (status={status})")
+                                    logger.warning(f"{name} Discord webhook failed (status={status})")
 
                     elif name == "p2p":
                         code = jsondata.get("code", "不明")
@@ -246,18 +246,17 @@ async def wsconnect(name, url):
                                     logger.debug(await response.text())
 
                             if 200 <= d_status < 300 and 200 <= m_status < 300:
-                                logger.info(f"{name} webhook成功")
+                                logger.info(f"{name} webhook finished")
                             else:
-                                logger.warning(f"{name} webhook失敗 (d_status={d_status}, m_status={m_status})")
-
+                                logger.warning(f"{name} webhook failed (d_status={d_status}, m_status={m_status})")
 
         except websockets.exceptions.ConnectionClosedError as e:
-            logger.warning(f"{name} 切断\n{e}")
+            logger.warning(f"{name} disconnected\n{e}")
 
         except Exception as e:
-            logger.error(f"{name} エラー\n{e}")
+            logger.error(f"{name} error\n{e}")
 
-        logger.warning(f"{name} 切断 再接続試行")
+        logger.warning(f"{name} disconnected, retrying...")
         await asyncio.sleep(2)
 
 
