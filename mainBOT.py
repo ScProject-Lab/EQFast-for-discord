@@ -235,13 +235,14 @@ async def wsconnect(name, url):
                             headers = {"Content-Type": "application/json; charset=utf-8"}
 
                             async with aiohttp.ClientSession() as session:
+                                # Discord webhook送信
                                 discord_payload = json.dumps(message, ensure_ascii=False).encode("utf-8")
                                 async with session.post(webhook_url, data=discord_payload, headers=headers) as response:
                                     d_status = response.status
                                     logger.debug(await response.text())
 
-                                macro_payload = json.dumps(line_send_data, ensure_ascii=False).encode("utf-8")
-                                async with session.post(macro_url, data=macro_payload, headers=headers) as response:
+                                # マクロ用Webhook送信
+                                async with session.post(macro_url, json={"message": line_send_data}) as response:
                                     m_status = response.status
                                     logger.debug(await response.text())
 
@@ -271,14 +272,8 @@ async def main():
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
     try:
-        loop.run_until_complete(main())
+        asyncio.run(main())
     except KeyboardInterrupt:
         logger.info("SHUTDOWN")
-        tasks = asyncio.all_tasks(loop)
-        for t in tasks:
-            t.cancel()
-        # 既存タスクのキャンセル完了を待つ
-        loop.run_until_complete(~asyncio.gather(*tasks, return_exceptions=True))
     finally:
-        loop.close()
         logger.info("SHUTDOWN FINISHED")
