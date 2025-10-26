@@ -4,6 +4,7 @@ import json
 import logging
 import aiohttp
 import os
+import subprocess
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -50,7 +51,6 @@ async def wsconnect(name, url):
                             isWarn = jsondata.get("isWarn", False)
                             Serial = jsondata.get("Serial", "不明")
                             Title = jsondata.get("Title", "不明")
-                            logger.debug(f"{name}:{Title} 第{Serial}報")
                             Hypocenter = jsondata.get("Hypocenter", "不明")
                             Magunitude = jsondata.get("Magunitude", "不明")
                             Depth = jsondata.get("Depth", "不明")
@@ -58,6 +58,7 @@ async def wsconnect(name, url):
                             MaxIntensity = jsondata.get("MaxIntensity", "不明")
                             isFinal = jsondata.get("isFinal", False)
                             isCancel = jsondata.get("isCancel", False)
+                            logger.debug(f"{name}:{Title} 第{Serial}報")
 
                             if isWarn:
                                 Title = f"{Title} 第{Serial}報"
@@ -70,8 +71,8 @@ async def wsconnect(name, url):
                                     "embeds": [
                                         {
                                             "title": f"{Title}",
-                                            "color": 0xe8b200,
-                                            "description": f"{Hypocenter}で地震\u3000身の安全を確保してください\nM{Magunitude}\u3000深さ{Depth}",
+                                            "color": 0xb2002f,
+                                            "description": f"{Hypocenter}で地震\u3000身の安全を確保してください\nM{Magunitude}\u3000深さ{Depth}km",
                                             "fields": [
                                                 {
                                                     "name": "推定最大震度",
@@ -111,8 +112,8 @@ async def wsconnect(name, url):
                                     "embeds": [
                                         {
                                             "title": f"{Title}",
-                                            "color": 0xb30c00,
-                                            "description": f"{Hypocenter}で地震\u3000身の安全を確保してください\nM{Magunitude}\u3000深さ{Depth}",
+                                            "color": 0xccb100,
+                                            "description": f"{Hypocenter}で地震\nM{Magunitude}\u3000深さ{Depth}km",
                                             "fields": [
                                                 {
                                                     "name": "推定最大震度",
@@ -153,6 +154,7 @@ async def wsconnect(name, url):
                             depth = str(jsondata["earthquake"]["hypocenter"]["depth"])
                             tsunami = jsondata["earthquake"]["domesticTsunami"]
                             source = jsondata["issue"]["source"]
+                            type = jsondata["issue"]["type"]
 
                             ms = {
                                 "-1": "None",
@@ -186,51 +188,109 @@ async def wsconnect(name, url):
 
                             tsunami_info = tsunamistr[tsunami]
 
-                            message = {
-                                "embeds": [
-                                    {
-                                        "title": "地震情報",
-                                        "description": f"{time}頃、{hyponame}で地震がありました。\n{tsunami_info}",
-                                        "color": 0x007cbf,
-                                        "fields": [
-                                            {
-                                                "name": "最大震度",
-                                                "value": f"{maxscale}",
-                                                "inline": False
-                                            },
-                                            {
-                                                "name": "震源",
-                                                "value": f"{hyponame}",
-                                                "inline": True
-                                            },
-                                            {
-                                                "name": "M",
-                                                "value": f"{magnitude}",
-                                                "inline": True
-                                            },
-                                            {
-                                                "name": "深さ",
-                                                "value": f"{depth}km",
-                                                "inline": True
-                                            },
-                                            {
-                                                "name": "発生時刻",
-                                                "value": f"{time}",
-                                                "inline": False
-                                            },
-                                            {
-                                                "name": "ソース",
-                                                "value": f"{source}",
-                                                "inline": False
-                                            }
-                                        ]
-                                    }
-                                ]
-                            }
+                            # ここのifは情報の種類を判定(震度速報etc...)
+                            if type == "ScaleAndDestination" or type == "Destination":
+                                message = {
+                                    "embeds": [
+                                        {
+                                            "title": "地震情報",
+                                            "description": f"{time}頃、{hyponame}で地震がありました。\n{tsunami_info}",
+                                            "color": 0x007cbf,
+                                            "fields": [
+                                                {
+                                                    "name": "最大震度",
+                                                    "value": f"{maxscale}",
+                                                    "inline": False
+                                                },
+                                                {
+                                                    "name": "震源",
+                                                    "value": f"{hyponame}",
+                                                    "inline": True
+                                                },
+                                                {
+                                                    "name": "M",
+                                                    "value": f"{magnitude}",
+                                                    "inline": True
+                                                },
+                                                {
+                                                    "name": "深さ",
+                                                    "value": f"{depth}km",
+                                                    "inline": True
+                                                },
+                                                {
+                                                    "name": "発生時刻",
+                                                    "value": f"{time}",
+                                                    "inline": False
+                                                },
+                                                {
+                                                    "name": "ソース",
+                                                    "value": f"{source}",
+                                                    "inline": False
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
 
-                            line_send_data = f"---地震情報---\n{time}頃、{hyponame}で地震がありました。{tsunami_info}\n\n震源  {hyponame}\n最大震度  {maxscale}\n深さ  {depth}km\nM {magnitude}\n\n【各地の震度】\n開発中\n\nソース {source}\n[試験自動送信中]"
-                            # LINEに送信失敗したときの手動コピペ送信用
-                            print(line_send_data)
+                                line_send_data = f"---地震情報---\n{time}頃、{hyponame}で地震がありました。{tsunami_info}\n\n震源  {hyponame}\n最大震度  {maxscale}\n深さ  {depth}km\nM {magnitude}\n\n【各地の震度】\n開発中\n\nソース {source}\n[試験自動送信中]"
+                                # LINEに送信失敗したときの手動コピペ送信用
+                                subprocess.run("clip", input=line_send_data, text=True)
+                                print(line_send_data)
+
+                            elif type == "ScalePrompt":
+                                if depth == "-1":
+                                    depth = "調査中"
+                                elif depth == "0":
+                                    depth = "ごく浅い"
+                                else:
+                                    depth = f"{depth}km"
+
+                                message = {
+                                    "embeds": [
+                                        {
+                                            "title": "震度速報",
+                                            "description": f"{time}頃、地震がありました。\n{tsunami_info}",
+                                            "color": 0x007cbf,
+                                            "fields": [
+                                                {
+                                                    "name": "最大震度",
+                                                    "value": f"{maxscale}",
+                                                    "inline": False
+                                                },
+                                                {
+                                                    "name": "震源",
+                                                    "value": "調査中",
+                                                    "inline": True
+                                                },
+                                                {
+                                                    "name": "M",
+                                                    "value": "調査中",
+                                                    "inline": True
+                                                },
+                                                {
+                                                    "name": "深さ",
+                                                    "value": f"{depth}",
+                                                    "inline": True
+                                                },
+                                                {
+                                                    "name": "発生時刻",
+                                                    "value": f"{time}",
+                                                    "inline": False
+                                                },
+                                                {
+                                                    "name": "ソース",
+                                                    "value": f"{source}",
+                                                    "inline": False
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+
+                                line_send_data = f"---震度速報---\n{time}頃、地震がありました。{tsunami_info}\n\n震源  調査中\n最大震度  {maxscale}\n深さ  調査中\nM {magnitude}\n\n【各地の震度】\n開発中\n\nソース {source}\n[試験自動送信中]"
+                                # LINEに送信失敗したときの手動コピペ送信用
+                                subprocess.run("clip", input=line_send_data, text=True)
+                                print(line_send_data)
 
                             headers = {"Content-Type": "application/json; charset=utf-8"}
 
@@ -274,6 +334,6 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        logger.info("SHUTDOWN")
+        logger.info("SHUTDOWN TRYING")
     finally:
         logger.info("SHUTDOWN FINISHED")
