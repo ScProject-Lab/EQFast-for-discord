@@ -156,6 +156,10 @@ async def wsconnect(name, url):
                             source = jsondata["issue"]["source"]
                             type = jsondata["issue"]["type"]
 
+                            # line_send_data を事前に定義
+                            line_send_data = ""
+                            message = {}
+
                             ms = {
                                 "-1": "None",
                                 "10": "1",
@@ -233,9 +237,6 @@ async def wsconnect(name, url):
                                 }
 
                                 line_send_data = f"---地震情報---\n{time}頃、{hyponame}で地震がありました。{tsunami_info}\n\n震源  {hyponame}\n最大震度  {maxscale}\n深さ  {depth}km\nM {magnitude}\n\n【各地の震度】\n開発中\n\nソース {source}\n[試験自動送信中]"
-                                # LINEに送信失敗したときの手動コピペ送信用
-                                subprocess.run("clip", input=line_send_data, text=True)
-                                print(line_send_data)
 
                             elif type == "ScalePrompt":
                                 if depth == "-1":
@@ -288,9 +289,10 @@ async def wsconnect(name, url):
                                 }
 
                                 line_send_data = f"---震度速報---\n{time}頃、地震がありました。{tsunami_info}\n\n震源  調査中\n最大震度  {maxscale}\n深さ  調査中\nM {magnitude}\n\n【各地の震度】\n開発中\n\nソース {source}\n[試験自動送信中]"
-                                # LINEに送信失敗したときの手動コピペ送信用
-                                subprocess.run("clip", input=line_send_data, text=True)
-                                print(line_send_data)
+
+                            # クリップボードコピーと表示
+                            subprocess.run("clip", input=line_send_data, text=True)
+                            print(line_send_data)
 
                             headers = {"Content-Type": "application/json; charset=utf-8"}
 
