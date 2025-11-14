@@ -4,10 +4,11 @@ import time
 import sys
 import pyperclip
 
+"""
 # テスト用
 with open("noto.json", "r", encoding="utf-8") as f:
     json_data = json.load(f)
-
+"""
 
 grade_translate = {
     "MajorWarning": "🟪大津波警報",
@@ -26,11 +27,9 @@ def rq(p2p_url):
     immediate = []
     maxheight = []
 
-    """
     json_data = requests.get(p2p_url)
     json_data = json.dumps(json_data.json())
     json_data = json.loads(json_data)
-    """
 
     for i in range(len(json_data[0]["areas"])):
         time = json_data[0]["issue"]["time"]
