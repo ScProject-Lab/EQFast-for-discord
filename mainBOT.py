@@ -4,7 +4,8 @@ import json
 import logging
 import aiohttp
 import os
-import subprocess
+import pyperclip
+from datetime import datetime
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -93,11 +94,10 @@ async def wsconnect(name, url):
                                 async with aiohttp.ClientSession() as session:
                                     async with session.post(webhook_url, json=message) as response:
                                         status = response.status
-                                        logger.debug(await response.text())
 
                                 # Responseが200-299なら成功
                                 if 200 <= status < 300:
-                                    logger.info(f"{name} Discord webhook finished")
+                                    logger.info(f"{name} Discord webhook finished:{status}")
                                 else:
                                     logger.warning(f"{name} Discord webhook failed (status={status})")
 
@@ -134,13 +134,12 @@ async def wsconnect(name, url):
                                 async with aiohttp.ClientSession() as session:
                                     async with session.post(webhook_url, json=message) as response:
                                         status = response.status
-                                        logger.debug(await response.text())
 
                                 # Responseが200-299なら成功
                                 if 200 <= status < 300:
-                                    logger.info(f"{name} Discord webhook finished")
+                                    logger.info(f"{name} Discord webhook finished:{status}")
                                 else:
-                                    logger.warning(f"{name} Discord webhook failed (status={status})")
+                                    logger.warning(f"{name} Discord webhook failed | status:{status}")
 
                     elif name == "p2p":
                         code = jsondata.get("code", "不明")
@@ -156,8 +155,7 @@ async def wsconnect(name, url):
                             source = jsondata["issue"]["source"]
                             type = jsondata["issue"]["type"]
 
-                            # line_send_data を事前に定義
-                            line_send_data = ""
+                            send_str = ""
                             message = {}
 
                             ms = {
@@ -192,8 +190,14 @@ async def wsconnect(name, url):
 
                             tsunami_info = tsunamistr[tsunami]
 
+                            # timeの秒を削除
+                            time = datetime.strptime(time, "%Y/%m/%d %H:%M:%S")
+                            time = time.strftime("%d日 %H:%M")
+
+                            headers = {"Content-Type": "application/json; charset=utf-8"}
+
                             # ここのifは情報の種類を判定(震度速報etc...)
-                            if type == "ScaleAndDestination" or type == "Destination":
+                            if type == "ScaleAndDestination":
                                 message = {
                                     "embeds": [
                                         {
@@ -236,7 +240,7 @@ async def wsconnect(name, url):
                                     ]
                                 }
 
-                                line_send_data = f"---地震情報---\n{time}頃、{hyponame}で地震がありました。{tsunami_info}\n\n震源  {hyponame}\n最大震度  {maxscale}\n深さ  {depth}km\nM {magnitude}\n\n【各地の震度】\n開発中\n\nソース {source}\n[試験自動送信中]"
+                                send_str = f"---地震情報---\n{time}頃、{hyponame}で地震がありました。{tsunami_info}\n\n震源  {hyponame}\n最大震度  {maxscale}\n深さ  {depth}km\nM {magnitude}\n\n【各地の震度】\n開発中\n\nソース {source}\n[試験自動送信中]"
 
                             elif type == "ScalePrompt":
                                 if depth == "-1":
@@ -250,7 +254,7 @@ async def wsconnect(name, url):
                                     "embeds": [
                                         {
                                             "title": "震度速報",
-                                            "description": f"{time}頃、地震がありました。\n{tsunami_info}",
+                                            "description": f"{time}頃、最大震度{maxscale}の地震がありました。\n{tsunami_info}",
                                             "color": 0x007cbf,
                                             "fields": [
                                                 {
@@ -288,30 +292,76 @@ async def wsconnect(name, url):
                                     ]
                                 }
 
-                                line_send_data = f"---震度速報---\n{time}頃、地震がありました。{tsunami_info}\n\n震源  調査中\n最大震度  {maxscale}\n深さ  調査中\nM {magnitude}\n\n【各地の震度】\n開発中\n\nソース {source}\n[試験自動送信中]"
+                                send_str = f"---震度速報---\n{time}頃、最大震度{maxscale}の地震がありました。{tsunami_info}\n\n震源  調査中\n最大震度  {maxscale}\n深さ  調査中\nM {magnitude}\n\n【各地の震度】\n開発中\n\nソース {source}\n[試験自動送信中]"
 
-                            # クリップボードコピーと表示
-                            subprocess.run("clip", input=line_send_data, text=True)
-                            print(line_send_data)
+                            elif type == "Destination":
+                                message = {
+                                    "embeds": [
+                                        {
+                                            "title": "震源に関する情報",
+                                            "description": f"{time}頃、最大震度{maxscale}の地震がありました。\n{tsunami_info}",
+                                            "color": 0x007cbf,
+                                            "fields": [
+                                                {
+                                                    "name": "最大震度",
+                                                    "value": f"{maxscale}",
+                                                    "inline": False
+                                                },
+                                                {
+                                                    "name": "震源",
+                                                    "value": f"{hyponame}",
+                                                    "inline": True
+                                                },
+                                                {
+                                                    "name": "M",
+                                                    "value": f"{magnitude}",
+                                                    "inline": True
+                                                },
+                                                {
+                                                    "name": "深さ",
+                                                    "value": f"{depth}",
+                                                    "inline": True
+                                                },
+                                                {
+                                                    "name": "発生時刻",
+                                                    "value": f"{time}",
+                                                    "inline": False
+                                                },
+                                                {
+                                                    "name": "ソース",
+                                                    "value": f"{source}",
+                                                    "inline": False
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
 
-                            headers = {"Content-Type": "application/json; charset=utf-8"}
+                            else:
+                                # ✅ どれにも当てはまらないとき
+                                message = {"content": f"[未分類] type={type} の地震データを受信しました"}
+                                send_str = f"[未分類] type={type} の地震データを受信しました"
+
+                            print(send_str)
 
                             async with aiohttp.ClientSession() as session:
                                 # Discord webhook送信
-                                discord_payload = json.dumps(message, ensure_ascii=False).encode("utf-8")
-                                async with session.post(webhook_url, data=discord_payload, headers=headers) as response:
+                                headers = {"Content-Type": "application/json"}
+                                async with session.post(webhook_url, json=message, headers=headers) as response:
                                     d_status = response.status
-                                    logger.debug(await response.text())
+                                    print(json.dumps(message, ensure_ascii=False, indent=2))
 
-                                # マクロ用Webhook送信
-                                async with session.post(macro_url, json={"message": line_send_data}) as response:
-                                    m_status = response.status
-                                    logger.debug(await response.text())
+                            # クリップボードにコピー
+                            try:
+                                pyperclip.copy(send_str)
+                                logger.info("message copied to clipboard")
+                            except Exception as e:
+                                logger.error(f"Error copying to clipboard: {e}")
 
-                            if 200 <= d_status < 300 and 200 <= m_status < 300:
+                            if 200 <= d_status < 300:
                                 logger.info(f"{name} webhook finished")
                             else:
-                                logger.warning(f"{name} webhook failed (d_status={d_status}, m_status={m_status})")
+                                logger.warning(f"{name} webhook failed (d_status={d_status})")
 
         except websockets.exceptions.ConnectionClosedError as e:
             logger.warning(f"{name} disconnected\n{e}")

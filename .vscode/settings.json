@@ -10,5 +10,10 @@
         "*test.py"
     ],
     "python.testing.pytestEnabled": false,
-    "python.testing.unittestEnabled": true
+    "python.testing.unittestEnabled": true,
+    "cSpell.words": [
+        "dotenv",
+        "levelname",
+        "wsconnect"
+    ]
 }
