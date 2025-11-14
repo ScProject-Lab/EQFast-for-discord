@@ -21,7 +21,6 @@ for Body in root.findall('seis:Body', ns):
     for kind in Body.findall('.//seis:Kind/seis:Name', ns):
         level.append(kind.text)
 
-
 print(level)
 print(area)
 
