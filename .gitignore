@@ -3,6 +3,7 @@
 /out/
 /.gradle/
 /.idea/
+venv/
 *.class
 *.log
 
