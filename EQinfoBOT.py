@@ -58,6 +58,7 @@ async def wsconnect(name, url):
                             MaxIntensity = jsondata.get("MaxIntensity", "不明")
                             isFinal = jsondata.get("isFinal", False)
                             isCancel = jsondata.get("isCancel", False)
+
                             logger.debug(f"{name}:{Title} 第{Serial}報")
 
                             if isWarn:
@@ -143,7 +144,7 @@ async def wsconnect(name, url):
                     elif name == "p2p":
                         code = jsondata.get("code", "不明")
 
-                        if code == 551:
+                        if code == "551":
                             # 各種情報を取得
                             hyponame = jsondata["earthquake"]["hypocenter"]["name"]
                             time = jsondata["earthquake"]["time"]
