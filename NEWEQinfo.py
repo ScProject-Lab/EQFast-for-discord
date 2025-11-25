@@ -4,7 +4,7 @@ import websockets
 import aiohttp
 import json
 import os
-import datetime
+from datetime import datetime
 from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
@@ -135,7 +135,7 @@ async def wsconnect(name, url):
                     elif name == "p2p":
                         code = parsed_json.get("code", None)
 
-                        if code == "551":
+                        if code == 551:
                             hyponame = parsed_json["earthquake"]["hypocenter"]["name"]
                             time = parsed_json["earthquake"]["time"]
                             maxscale_raw = str(parsed_json["earthquake"]["maxScale"])
@@ -353,7 +353,7 @@ async def wsconnect(name, url):
             logger.warning(f"{name} disconnected\n{e}")
 
         except Exception as e:
-            logger.error(f"{name} error\n{e}")
+            logger.error(f"{name} error:{e}")
 
         logger.warning(f"{name} disconnected, retrying...")
         await asyncio.sleep(2)
