@@ -1,4 +1,5 @@
 import xml.etree.ElementTree as ET
+import requests
 
 with open("2024ishikawa.xml", "r", encoding="utf-8") as f:
     xml_str = f.read()
@@ -14,15 +15,13 @@ ns = {
 
 area = []
 level = []
+headline = ""
 
 for Body in root.findall('seis:Body', ns):
     for item in Body.findall('.//seis:Item', ns):
         area.append(item.find('.//seis:Area/seis:Name', ns).text)
     for kind in Body.findall('.//seis:Kind/seis:Name', ns):
         level.append(kind.text)
-
-print(level)
-print(area)
 
 warning_dict = {}
 
@@ -35,7 +34,11 @@ for i in range(len(level)):
 
     warning_dict[lv].append(ar)
 
+s_str = ""
+
 for lv, areas in warning_dict.items():
-    print(lv)
+    s_str += f"{lv}\n"
     for a in areas:
-        print("  " + a)
+        s_str += f"  {a}\n"
+
+print(s_str)

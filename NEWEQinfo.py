@@ -328,16 +328,51 @@ async def wsconnect(name, url):
                                     ]
                                 }
 
-                            else:
-                                # どれにも当てはまらない時
-                                unknown = {
-                                    "DetailScale": "各地の震度に関する情報を受信しました。",
-                                    "Other": "その他の情報を受信しました。",
+                            elif type == "DetailScale":
+                                message = {
+                                    "embeds": [
+                                        {
+                                            "title": "地震情報",
+                                            "description": f"{time}頃、{hyponame}で最大震度{maxscale}の地震がありました。\n{tsunami_info}",
+                                            "color": 0x007cbf,
+                                            "fields": [
+                                                {
+                                                    "name": "最大震度",
+                                                    "value": f"{maxscale}",
+                                                    "inline": False
+                                                },
+                                                {
+                                                    "name": "震源",
+                                                    "value": f"{hyponame}",
+                                                    "inline": True
+                                                },
+                                                {
+                                                    "name": "M",
+                                                    "value": f"{magnitude}",
+                                                    "inline": True
+                                                },
+                                                {
+                                                    "name": "深さ",
+                                                    "value": f"{depth}km",
+                                                    "inline": True
+                                                },
+                                                {
+                                                    "name": "発生時刻",
+                                                    "value": f"{time}",
+                                                    "inline": False
+                                                },
+                                                {
+                                                    "name": "ソース",
+                                                    "value": f"{source}",
+                                                    "inline": False
+                                                }
+                                            ]
+                                        }
+                                    ]
                                 }
 
-                                if_unk_ms = unknown[type]
-
-                                message = {"content": f"その他のメッセージ:{if_unk_ms}"}
+                            else:
+                                message = {"content": f"その他のメッセージ:{type}"}
 
                             async with aiohttp.ClientSession() as session:
                                 async with session.post(discordwh_url, json=message) as response:
