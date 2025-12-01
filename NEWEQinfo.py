@@ -23,6 +23,7 @@ console_handler.setFormatter(formatter)
 load_dotenv()
 
 discordwh_url = os.getenv("DISCORD_WEBHOOK")
+raw_wh = os.getenv("RAW_D_WH")
 
 if not logger.handlers:
     logger.addHandler(file_handler)
@@ -34,7 +35,7 @@ p2purl = "wss://api.p2pquake.net/v2/ws"
 headers = {'Content-Type': 'application/json'}
 
 
-async def wsconnect(name, url):
+async def wsconnect(name, url, session):
     while True:
         try:
             async with websockets.connect(url) as websocket:
@@ -119,15 +120,20 @@ async def wsconnect(name, url):
                                     ]
                                 }
 
-                            async with aiohttp.ClientSession() as session:
-                                async with session.post(discordwh_url, json=message) as response:
-                                    status = response.status
+                            try:
+                                resp = await session.post(discordwh_url, json=message)
+                                if resp.status == 204:
+                                    logger.info(f"Webhook finished:{resp.status}")
+                                else:
+                                    logger.error(f"Webhook failed:{resp.status}")
+                            except Exception as e:
+                                logger.exception(f"WH ERROR:{e}")
 
                             # Responseが200-299なら成功
-                            if 200 <= status < 300:
-                                logger.info(f"{name} Discord webhook finished:{status}")
+                            if 200 <= resp.status < 300:
+                                logger.info(f"{name} Discord webhook finished:{resp.status}")
                             else:
-                                logger.warning(f"{name} Discord webhook failed (status={status})")
+                                logger.warning(f"{name} Discord webhook failed (status={resp.status})")
 
                         elif type == "不明":
                             logger.warning(f"{name} unknown data type received")
@@ -169,7 +175,7 @@ async def wsconnect(name, url):
                             tsunamistr = {
                                 " ": "この地震による津波の心配はありません。",
                                 "Unknown": "津波に関する情報は不明です。",
-                                "Checking": "現在津波の情報を調査中です。",
+                                "Checking": "現在、津波についての情報を調査中です。",
                                 "NonEffective": "若干の海面変動があるかも知れませんが、被害の心配はありません。",
                                 "Watch": "現在、津波注意報が発表されています。",
                                 "Warning": "現在、津波予報等を発表中です。"
@@ -207,6 +213,10 @@ async def wsconnect(name, url):
                                             ]
                                         }
                                     ]
+                                }
+
+                                sub_message = {
+                                    "content": f"---震度速報---\n{time}頃、最大震度{maxscale}の地震がありました。\n{tsunami_info}\n\n最大震度 {maxscale}\n発生時刻 {time}\n ソース {source} [Auto Generated]"
                                 }
 
                             elif type == "Destination":
@@ -377,12 +387,19 @@ async def wsconnect(name, url):
                             async with aiohttp.ClientSession() as session:
                                 async with session.post(discordwh_url, json=message) as response:
                                     status = response.status
+                                async with session.post(raw_wh, json=sub_message) as response:
+                                    sub_status = response.status
 
                             # Responseが200-299なら成功
                             if 200 <= status < 300:
                                 logger.info(f"{name} Discord webhook finished:{status}")
                             else:
                                 logger.warning(f"{name} Discord webhook failed (status={status})")
+
+                            if 200 <= sub_status < 300:
+                                logger.info(f"{name}-SUB Discord webhook finished:{status}")
+                            else:
+                                logger.warning(f"{name}-SUB Discord webhook failed (status={status})")
 
         except websockets.exceptions.ConnectionClosedError as e:
             logger.warning(f"{name} disconnected\n{e}")
@@ -397,10 +414,14 @@ async def wsconnect(name, url):
 async def main():
     wolfxurl = "wss://ws-api.wolfx.jp/jma_eew"
     p2purl = "wss://api.p2pquake.net/v2/ws"
-    await asyncio.gather(
-        wsconnect("wolfx", wolfxurl),
-        wsconnect("p2p", p2purl),
-    )
+    session = aiohttp.ClientSession()
+    try:
+        await asyncio.gather(
+            wsconnect("wolfx", wolfxurl),
+            wsconnect("p2p", p2purl),
+        )
+    finally:
+        await session.close()
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
