@@ -32,8 +32,6 @@ if not logger.handlers:
 wolfxurl = "wss://ws-api.wolfx.jp/jma_eew"
 p2purl = "wss://api.p2pquake.net/v2/ws"
 
-headers = {'Content-Type': 'application/json'}
-
 
 async def wsconnect(name, url, session):
     while True:
@@ -164,7 +162,7 @@ async def wsconnect(name, url, session):
                                 magnitude = "None"
 
                             tsunamistr = {
-                                " ": "この地震による津波の心配はありません。",
+                                "None": "この地震による津波の心配はありません。",
                                 "Unknown": "津波に関する情報は不明です。",
                                 "Checking": "現在、津波についての情報を調査中です。",
                                 "NonEffective": "若干の海面変動があるかも知れませんが、被害の心配はありません。",
@@ -174,9 +172,12 @@ async def wsconnect(name, url, session):
 
                             tsunami_info = tsunamistr[tsunami]
 
-                            # timeの秒を削除
-                            time = datetime.strptime(time, "%Y/%m/%d %H:%M:%S")
-                            time = time.strftime("%d日 %H:%M")
+                            try:
+                                # timeの秒を削除
+                                time = datetime.strptime(time, "%Y/%m/%d %H:%M:%S")
+                                time = time.strftime("%d日 %H:%M")
+                            except Exception:
+                                pass
 
                             if type == "ScalePrompt":
                                 d_message = {
