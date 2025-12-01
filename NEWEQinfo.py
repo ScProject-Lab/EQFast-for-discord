@@ -73,7 +73,7 @@ async def wsconnect(name, url, session):
                                 wh_title += "- 取消"
 
                             if isWarn:
-                                message = {
+                                d_message = {
                                     "embeds": [
                                         {
                                             "title": f"{Title}",
@@ -97,7 +97,7 @@ async def wsconnect(name, url, session):
                                 }
 
                             else:
-                                message = {
+                                d_message = {
                                     "embeds": [
                                         {
                                             "title": f"{wh_title}",
@@ -120,20 +120,11 @@ async def wsconnect(name, url, session):
                                     ]
                                 }
 
-                            try:
-                                resp = await session.post(discordwh_url, json=message)
-                                if resp.status == 204:
-                                    logger.info(f"Webhook finished:{resp.status}")
-                                else:
-                                    logger.error(f"Webhook failed:{resp.status}")
-                            except Exception as e:
-                                logger.exception(f"WH ERROR:{e}")
-
-                            # Responseが200-299なら成功
-                            if 200 <= resp.status < 300:
-                                logger.info(f"{name} Discord webhook finished:{resp.status}")
-                            else:
-                                logger.warning(f"{name} Discord webhook failed (status={resp.status})")
+                                async with session.post(discordwh_url, json=d_message) as resp:
+                                    if resp.status in (200, 204):
+                                        logger.info(f"Webhook OK:{resp.status}")
+                                    else:
+                                        logger.error(f"Webhook failed:{resp.status}")
 
                         elif type == "不明":
                             logger.warning(f"{name} unknown data type received")
@@ -188,7 +179,7 @@ async def wsconnect(name, url, session):
                             time = time.strftime("%d日 %H:%M")
 
                             if type == "ScalePrompt":
-                                message = {
+                                d_message = {
                                     "embeds": [
                                         {
                                             "title": "震度速報",
@@ -216,11 +207,11 @@ async def wsconnect(name, url, session):
                                 }
 
                                 sub_message = {
-                                    "content": f"---震度速報---\n{time}頃、最大震度{maxscale}の地震がありました。\n{tsunami_info}\n\n最大震度 {maxscale}\n発生時刻 {time}\n ソース {source} [Auto Generated]"
+                                    "content": f"---震度速報---\n{time}頃、最大震度{maxscale}の地震がありました。\n{tsunami_info}\n\n最大震度 {maxscale}\n発生時刻 {time}\n ソース {source}\n[Auto Generated]"
                                 }
 
                             elif type == "Destination":
-                                message = {
+                                d_message = {
                                     "embeds": [
                                         {
                                             "title": "震源に関する情報",
@@ -257,8 +248,12 @@ async def wsconnect(name, url, session):
                                     ]
                                 }
 
+                                sub_message = {
+                                    "content": f"---震源に関する情報---\n{time}頃、{hyponame}で地震がありました。\n{tsunami_info}\n\n震源 {hyponame}\nM {magnitude}\n深さ {depth}km\n発生時刻 {time}\nソース {source}\n\n[Auto Generated]"
+                                }
+
                             elif type == "ScaleAndDestination":
-                                message = {
+                                d_message = {
                                     "embeds": [
                                         {
                                             "title": "震度·震源に関する情報",
@@ -300,8 +295,12 @@ async def wsconnect(name, url, session):
                                     ]
                                 }
 
+                                sub_message = {
+                                    "content": f"---震度・震源に関する情報---\n{time}頃、{hyponame}で最大震度{maxscale}の地震がありました。\n{tsunami_info}\n\n最大震度{maxscale}\n\n震源 {hyponame}\nM {magnitude}\n深さ {depth}\n発生時刻 {time}\nソース {source}\n\n[Auto Generated]"
+                                }
+
                             elif type == "Foreign":
-                                message = {
+                                d_message = {
                                     "embeds": [
                                         {
                                             "title": "遠地地震に関する情報",
@@ -338,8 +337,12 @@ async def wsconnect(name, url, session):
                                     ]
                                 }
 
+                                sub_message = {
+                                    "content": f"---遠地地震情報---\n{time}頃、海外で大きな地震がありました。\n{tsunami_info}\n\n震源 {hyponame}\nM {magnitude}\n深さ {depth}\n発生時刻 {time}ソース {source}\n\n[Auto Generated]"
+                                }
+
                             elif type == "DetailScale":
-                                message = {
+                                d_message = {
                                     "embeds": [
                                         {
                                             "title": "地震情報",
@@ -381,25 +384,27 @@ async def wsconnect(name, url, session):
                                     ]
                                 }
 
-                            else:
-                                message = {"content": f"その他のメッセージ:{type}"}
+                                sub_message = {
+                                    "content": f"---地震情報---\n{time}頃、{hyponame}で最大震度{maxscale}の地震がありました。\n{tsunami_info}\n\n最大震度{tsunami_info}\n\n震源 {hyponame}\nM {magnitude}\n深さ {depth}\n発生時刻 {time}\nソース {source}\n\n[Auto Generated]"
+                                }
 
-                            async with aiohttp.ClientSession() as session:
-                                async with session.post(discordwh_url, json=message) as response:
-                                    status = response.status
-                                async with session.post(raw_wh, json=sub_message) as response:
-                                    sub_status = response.status
-
-                            # Responseが200-299なら成功
-                            if 200 <= status < 300:
-                                logger.info(f"{name} Discord webhook finished:{status}")
                             else:
-                                logger.warning(f"{name} Discord webhook failed (status={status})")
+                                d_message = {"content": f"その他のメッセージ:{type}"}
+                                sub_message = {
+                                    "content": "その他のメッセージ"
+                                }
 
-                            if 200 <= sub_status < 300:
-                                logger.info(f"{name}-SUB Discord webhook finished:{status}")
-                            else:
-                                logger.warning(f"{name}-SUB Discord webhook failed (status={status})")
+                            async with session.post(discordwh_url, json=d_message) as resp:
+                                if resp.status in (200, 204):
+                                    logger.info(f"Webhook OK:{resp.status}")
+                                else:
+                                    logger.error(f"Webhook failed:{resp.status}")
+
+                            async with session.post(raw_wh, json=sub_message) as resp:
+                                if resp.status in (200, 204):
+                                    logger.info(f"Webhook OK:{resp.status}")
+                                else:
+                                    logger.error(f"Webhook failed:{resp.status}")
 
         except websockets.exceptions.ConnectionClosedError as e:
             logger.warning(f"{name} disconnected\n{e}")
@@ -417,8 +422,8 @@ async def main():
     session = aiohttp.ClientSession()
     try:
         await asyncio.gather(
-            wsconnect("wolfx", wolfxurl),
-            wsconnect("p2p", p2purl),
+            wsconnect("wolfx", wolfxurl, session),
+            wsconnect("p2p", p2purl, session),
         )
     finally:
         await session.close()
