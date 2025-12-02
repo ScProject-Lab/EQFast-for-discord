@@ -140,6 +140,9 @@ async def wsconnect(name, url, session):
                             source = parsed_json["issue"]["source"]
                             type = parsed_json["issue"]["type"]
 
+                            if depth == 0:
+                                depth = "ごく浅い"
+
                             ms = {
                                 "-1": "None",
                                 "10": "1",
@@ -297,7 +300,7 @@ async def wsconnect(name, url, session):
                                 }
 
                                 sub_message = {
-                                    "content": f"---震度・震源に関する情報---\n{time}頃、{hyponame}で最大震度{maxscale}の地震がありました。\n{tsunami_info}\n\n最大震度{maxscale}\n\n震源 {hyponame}\nM {magnitude}\n深さ {depth}\n発生時刻 {time}\nソース {source}\n\n[Auto Generated]"
+                                    "content": f"---震度・震源に関する情報---\n{time}頃、{hyponame}で最大震度{maxscale}の地震がありました。\n{tsunami_info}\n\n最大震度{maxscale}\n\n震源 {hyponame}\nM {magnitude}\n深さ {depth}km\n発生時刻 {time}\nソース {source}\n\n[Auto Generated]"
                                 }
 
                             elif type == "Foreign":
@@ -339,7 +342,7 @@ async def wsconnect(name, url, session):
                                 }
 
                                 sub_message = {
-                                    "content": f"---遠地地震情報---\n{time}頃、海外で大きな地震がありました。\n{tsunami_info}\n\n震源 {hyponame}\nM {magnitude}\n深さ {depth}\n発生時刻 {time}ソース {source}\n\n[Auto Generated]"
+                                    "content": f"---遠地地震情報---\n{time}頃、海外で大きな地震がありました。\n{tsunami_info}\n\n震源 {hyponame}\nM {magnitude}\n深さ {depth}km\n発生時刻 {time}ソース {source}\n\n[Auto Generated]"
                                 }
 
                             elif type == "DetailScale":
@@ -386,7 +389,7 @@ async def wsconnect(name, url, session):
                                 }
 
                                 sub_message = {
-                                    "content": f"---地震情報---\n{time}頃、{hyponame}で最大震度{maxscale}の地震がありました。\n{tsunami_info}\n\n最大震度{tsunami_info}\n\n震源 {hyponame}\nM {magnitude}\n深さ {depth}\n発生時刻 {time}\nソース {source}\n\n[Auto Generated]"
+                                    "content": f"---地震情報---\n{time}頃、{hyponame}で最大震度{maxscale}の地震がありました。\n{tsunami_info}\n\n最大震度{maxscale}\n震源 {hyponame}\nM {magnitude}\n深さ {depth}km\n発生時刻 {time}\nソース {source}\n\n[Auto Generated]"
                                 }
 
                             else:
