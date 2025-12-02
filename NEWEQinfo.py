@@ -143,6 +143,9 @@ async def wsconnect(name, url, session):
                             if depth == 0:
                                 depth = "ごく浅い"
 
+                            if "." not in magnitude:
+                                magnitude += ".0"
+
                             ms = {
                                 "-1": "None",
                                 "10": "1",

@@ -7,15 +7,32 @@ with open("2024ishikawa.xml", "r", encoding="utf-8") as f:
 root = ET.fromstring(xml_str)
 print(root)
 
+grade_translate = {
+    "MajorWarning": "🟪大津波警報",
+    "Warning": "🟥津波警報",
+    "Watch": "🟨津波注意報",
+    "Unknown": "不明",
+}
+
 ns = {
     'jmx': 'http://xml.kishou.go.jp/jmaxml1/',
     'seis': 'http://xml.kishou.go.jp/jmaxml1/body/seismology1/',
     'eb': 'http://xml.kishou.go.jp/jmaxml1/elementBasis1/',
+    'eqh': 'http://xml.kishou.go.jp/jmaxml1/informationBasis1/',
 }
 
 area = []
 level = []
 headline = ""
+
+head = root.find('eqh:Head', ns)
+if head is not None:
+    title = head.find('eqh:Title', ns).text
+    text_elem = head.find('.//eqh:Text', ns)
+    h_line = text_elem.text if text_elem is not None else ""
+
+h_line = h_line.replace("\n", "")
+h_line += "\n"
 
 for Body in root.findall('seis:Body', ns):
     for item in Body.findall('.//seis:Item', ns):
@@ -36,8 +53,10 @@ for i in range(len(level)):
 
 s_str = ""
 
+s_str += time + "\n津波情報が発表されています。\n- " + h_line
+
 for lv, areas in warning_dict.items():
-    s_str += f"{lv}\n"
+    s_str += f"\n{lv}\n"
     for a in areas:
         s_str += f"  {a}\n"
 
