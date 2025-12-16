@@ -195,7 +195,7 @@ async def wsconnect(name, url, session):
                             tsunamistr = {
                                 "None": "この地震による津波の心配はありません。",
                                 "Unknown": "津波に関する情報は不明です。",
-                                "Checking": "現在、津波についての情報を調査中です。",
+                                "Checking": "津波などの詳しい情報は追ってお知らせします。",
                                 "NonEffective": "若干の海面変動があるかも知れませんが、被害の心配はありません。",
                                 "Watch": "現在、津波注意報が発表されています。",
                                 "Warning": "現在、津波予報等を発表中です。"
