@@ -26,7 +26,6 @@
     "python.linting.enabled": true,
     "python.linting.flake8Enabled": true,
     "python.linting.pylintEnabled": false,
-    "workbench.iconTheme": "vscode-icons",
     "editor.largeFileOptimizations": false,
     "flake8.args": [
         "--ignore=E501"
