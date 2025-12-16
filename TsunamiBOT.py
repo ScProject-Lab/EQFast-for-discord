@@ -1,8 +1,6 @@
 import json
-import requests
 import time
 import sys
-import pyperclip
 
 # テスト用
 with open("noto.json", "r", encoding="utf-8") as f:
@@ -78,7 +76,6 @@ if __name__ == "__main__":
             if now != comparison:
                 comparison = now
                 print(comparison)
-            pyperclip.copy(now)
             time.sleep(5)
     except KeyboardInterrupt:
         print("SHUTDOWN")

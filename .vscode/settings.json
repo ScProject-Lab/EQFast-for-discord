@@ -9,11 +9,35 @@
         "-p",
         "*test.py"
     ],
-    "python.testing.pytestEnabled": false,
-    "python.testing.unittestEnabled": true,
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
     "cSpell.words": [
         "dotenv",
         "levelname",
         "wsconnect"
-    ]
+    ],
+    "python.languageServer": "Pylance",
+    "python.formatting.provider": "black",
+    "editor.formatOnSave": true,
+    "python.sortImports.args": [
+        "--profile",
+        "black"
+    ],
+    "python.linting.enabled": true,
+    "python.linting.flake8Enabled": true,
+    "python.linting.pylintEnabled": false,
+    "workbench.iconTheme": "vscode-icons",
+    "editor.largeFileOptimizations": false,
+    "flake8.args": [
+        "--ignore=E501"
+    ],
+    "files.autoSave": "onWindowChange",
+    "emeraldwalk.runonsave": {
+        "commands": [
+            {
+                "match": "EQinfoBOT\\.py$",
+                "cmd": "systemctl restart eqfast.service && systemctl status eqfast.service | tee ~/eqfast.log"
+            }
+        ]
+    }
 }

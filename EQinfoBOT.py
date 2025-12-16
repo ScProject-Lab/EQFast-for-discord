@@ -145,7 +145,7 @@ async def wsconnect(name, url):
                         code = jsondata.get("code", "不明")
 
                         if code == "551":
-                            # 各種情報を取得
+                            #  すべての情報取得
                             hyponame = jsondata["earthquake"]["hypocenter"]["name"]
                             time = jsondata["earthquake"]["time"]
                             maxscale_raw = str(jsondata["earthquake"]["maxScale"])
