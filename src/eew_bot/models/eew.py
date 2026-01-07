@@ -1,28 +1,31 @@
 from dataclasses import dataclass
+from typing import List, Optional
 
 
 @dataclass
 class Warnarea:
-    chiiki: list[str]
-    Shindo1: list[str]
-    Arrive: list[bool]
+    chiiki: List[str]
+    Shindo1: List[str]
+    Arrive: List[bool]
 
 
 @dataclass
 class EEW:
-    type: str
-    Title: str
-    EventID: str
-    Serial: int
-    AnnouncedTime: str
-    Hypocenter: str
-    Magunitude: float
-    Depth: int
-    MaxIntensity: str
-    Warnarea: list[Warnarea]
-    isSea: bool
-    isTraining: bool
-    isAssumption: bool
-    isWarn: bool
-    isFinal: bool
-    isCancel: bool
+    event_id: str
+    report_no: int
+    title: str
+    report_time: str
+
+    hypo_name: str
+    magnitude: float
+    depth: int
+    max_shindo: Optional[str]
+
+    warn_area: List[str]
+
+    is_sea: bool
+    is_test: bool
+    is_plum: bool
+    is_warn: bool
+    is_final: bool
+    is_cancel: bool
