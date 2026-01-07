@@ -79,7 +79,8 @@ async def wsconnect(name, url, session):
                                         {
                                             "title": f"{wh_title}",
                                             "color": 0xb2002f,
-                                            "description": f"{Hypocenter}で地震\u3000身の安全を確保してください\nM {Magunitude}\u3000深さ {Depth}km",
+                                            "description": f"{Hypocenter}で地震　身の安全を確保してください\nM {Magunitude}　深さ {Depth}km",
+
                                             "fields": [
                                                 {
                                                     "name": "推定最大震度",
@@ -96,8 +97,11 @@ async def wsconnect(name, url, session):
                                                     "value": f"{AnnouncedTime}",
                                                     "inline": False
                                                 }
-                                            ]
+                                            ],
 
+                                            "image": {
+                                                "url": "https://github.com/ScProject-Lab/earthquake-images/blob/main/%E7%B7%8A%E6%80%A5%E5%9C%B0%E9%9C%87%E9%80%9F%E5%A0%B1.png?raw=true"
+                                            }
                                         }
                                     ]
                                 }
