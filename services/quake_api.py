@@ -1,0 +1,1 @@
+async def fetch_quakes():
