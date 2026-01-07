@@ -34,7 +34,7 @@ async def connect_eew():
                     continue
                 
                 logger.info(
-                    f"EEW {eew.event_id} | 震源地 {eew.hypo_name} | M {eew.magnitude} | 最大震度 {eew.max_shindo}"
+                    f"EEW {eew.event_id} | 震源 {eew.hypo_name} | M {eew.magnitude} | 最大震度 {eew.max_shindo}"
                 )
 
                 eew = parse_eew(data)
