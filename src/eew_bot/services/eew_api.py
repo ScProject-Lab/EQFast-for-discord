@@ -9,7 +9,6 @@ from eew_bot.utils.discord_formatter import build_eew_embed
 from eew_bot.utils.discord_raw_webhook import send_raw_message
 from eew_bot.utils.discord_raw_formatter import build_raw_text
 
-from typing import Optional
 
 async def connect_eew():
     if EEW_API_URL is None:
@@ -18,7 +17,7 @@ async def connect_eew():
 
     try:
         async with websockets.connect(EEW_API_URL) as websocket:
-            logger.info(f"Connected to Wolfx")
+            logger.info("Connected to Wolfx")
 
             async for message in websocket:
                 logger.debug(f"Raw message: {message}")
@@ -32,7 +31,7 @@ async def connect_eew():
                 eew = parse_eew(data)
                 if eew is None:
                     continue
-                
+
                 logger.info(
                     f"EEW {eew.event_id} | 震源 {eew.hypo_name} | M {eew.magnitude} | 最大震度 {eew.max_shindo}"
                 )
@@ -49,4 +48,3 @@ async def connect_eew():
 
     except Exception as e:
         logger.error(f"Connect error: {e}")
-

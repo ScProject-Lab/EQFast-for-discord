@@ -1,4 +1,7 @@
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 RAW_DATA_WH = os.getenv("RAW_D_WH")
