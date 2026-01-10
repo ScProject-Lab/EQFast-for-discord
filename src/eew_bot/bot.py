@@ -1,6 +1,6 @@
 import asyncio
 from eew_bot.services.eew_api import connect_eew
-from eew_bot.utils.logger import logger  # 既存の logger を使うなら
+from eew_bot.utils.logger import logger
 
 
 async def main():

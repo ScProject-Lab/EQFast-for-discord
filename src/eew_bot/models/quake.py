@@ -39,7 +39,7 @@ class EarthquakeEvent:
     code: int
     issue: Issue
     earthquake: Earthquake
-    points: list[Point]
+    points: "list[Point]"
 
 
-events: list[EarthquakeEvent]
+events: "list[EarthquakeEvent]"

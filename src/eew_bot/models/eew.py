@@ -11,7 +11,6 @@ class Warnarea:
 
 @dataclass
 class EEW:
-    event_id: str
     report_no: int
     title: str
     report_time: str

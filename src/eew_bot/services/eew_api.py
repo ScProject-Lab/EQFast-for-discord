@@ -28,17 +28,22 @@ async def connect_eew():
                     logger.warning("JSON parse failed")
                     continue
 
+                msg_type = data.get("type")
+
+                if msg_type != "jma_eew":
+                    if msg_type == "heartbeat":
+                        logger.info("heartbeat received")
+                    else:
+                        logger.debug(f"Ignored message type: {msg_type}")
+                    continue
+
                 eew = parse_eew(data)
                 if eew is None:
                     continue
 
                 logger.info(
-                    f"EEW {eew.event_id} | 震源 {eew.hypo_name} | M {eew.magnitude} | 最大震度 {eew.max_shindo}"
+                    f"EEW | 震源 {eew.hypo_name} | M {eew.magnitude} | 最大震度 {eew.max_shindo}"
                 )
-
-                eew = parse_eew(data)
-                if eew is None:
-                    continue
 
                 payload = build_eew_embed(eew)
                 await send_webhook(payload)
@@ -47,4 +52,4 @@ async def connect_eew():
                 await send_raw_message(text)
 
     except Exception as e:
-        logger.error(f"Connect error: {e}")
+        logger.exception(f"Connect error: {e}")
