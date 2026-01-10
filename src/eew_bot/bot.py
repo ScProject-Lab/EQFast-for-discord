@@ -1,7 +1,20 @@
-async def poll_eew():
-    eew = await fetch_eew()
-    if is_new_eew(eew):
-        await send_eew(eew)
+import asyncio
+from eew_bot.services.eew_api import connect_eew
+from eew_bot.utils.logger import logger  # 既存の logger を使うなら
+
+
+async def main():
+    logger.info("EQFast bot started")
+
+    while True:
+        try:
+            await connect_eew()
+        except Exception as e:
+            logger.exception(f"connect_eew crashed: {e}")
+
+        logger.warning("EEW connection closed. Reconnecting in 5s...")
+        await asyncio.sleep(5)
+
 
 def start():
-    
+    asyncio.run(main())

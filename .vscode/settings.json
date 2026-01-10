@@ -30,7 +30,7 @@
     "flake8.args": [
         "--ignore=E501"
     ],
-    "files.autoSave": "onWindowChange",
+    "files.autoSave": "afterDelay",
     "emeraldwalk.runonsave": {
         "commands": [
             {

@@ -5,6 +5,8 @@ def build_raw_text(eew: EEW) -> str:
     kind = "警報" if eew.is_warn else "予報"
     final = " - 最終" if eew.is_final else ""
 
+    warn_desc = ""
+
     if eew.is_plum:
         eew_method = " (PLUM法による予測)"
     else:
@@ -44,7 +46,6 @@ def build_warn_area_text(warn_areas: list) -> str:
 
         shindo_map.setdefault(shindo, [])
 
-        # 地域名重複防止
         if not any(c == chiiki for c, _ in shindo_map[shindo]):
             shindo_map[shindo].append((chiiki, suffix))
 
