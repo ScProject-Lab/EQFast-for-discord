@@ -5,6 +5,8 @@ def build_raw_text(eew: EEW) -> str:
     kind = "警報" if eew.is_warn else "予報"
     final = " - 最終" if eew.is_final else ""
 
+    title = f"---緊急地震速報（{kind}） 第{eew.report_no}報{final}---\n"
+
     warn_desc = ""
 
     if eew.is_plum:
@@ -18,7 +20,7 @@ def build_raw_text(eew: EEW) -> str:
         warn_desc = "\u3000強い揺れに警戒"
 
     return (
-        f"---緊急地震速報（{kind}） 第{eew.report_no}報{final}---\n"
+        f"{title}"
         f"{eew.hypo_name}で地震{eew_method}{warn_desc}\n"
         f"M {eew.magnitude:.1f}\u3000深さ {eew.depth}km\n"
         f"推定最大震度 {eew.max_shindo}\n"
@@ -61,7 +63,7 @@ def build_warn_area_text(warn_areas: list) -> str:
         if not areas:
             continue
 
-        text_lines.append(f"[推定震度 {shindo}]")
+        text_lines.append(f"*[推定震度 {shindo}]*")
 
         area_texts = []
         for chiiki, suffix in areas:
