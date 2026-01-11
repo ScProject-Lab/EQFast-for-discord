@@ -1,0 +1,2 @@
+eew_bot
+logs

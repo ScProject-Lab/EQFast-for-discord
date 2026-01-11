@@ -1,0 +1,2 @@
+[console_scripts]
+eqfast = eew_bot.bot:start

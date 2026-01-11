@@ -5,7 +5,5 @@ load_dotenv()
 
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 RAW_DATA_WH = os.getenv("RAW_D_WH")
-EEW_API_URL = "ws://127.0.0.1:8765"
+EEW_API_URL = os.getenv("WOLFX_API")
 QUAKE_API_URL = os.getenv("QUAKE_API_URL")
-
-LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")

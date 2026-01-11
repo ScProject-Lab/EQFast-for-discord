@@ -1,23 +1,18 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools-scm>=6.2"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "eqfast"
 version = "0.1.0"
-description = "Earthquake Early Warning Bot"
-requires-python = ">=3.10"
 dependencies = [
-    "websockets>=12.0",
-    "aiohttp>=3.9.0",
+    "websockets",
+    "python-dotenv",
+    "aiohttp",
 ]
 
-[project.optional-dependencies]
-dev = [
-    "pylint",
-    "black",
-    "mypy",
-]
-
-[build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_backend"
+[project.scripts]
+eqfast = "eew_bot.bot:start"
 
 [tool.setuptools.packages.find]
 where = ["src"]
