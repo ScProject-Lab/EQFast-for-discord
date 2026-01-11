@@ -1,4 +1,6 @@
+from typing import Dict, Any
 from eew_bot.models.eew import EEW
+from eew_bot.models.quake import EarthquakeEvent
 
 
 def build_eew_embed(eew: EEW) -> dict:
@@ -90,3 +92,119 @@ def arrive_suffix(arrive_text: str) -> str:
         return "（到達予測無し）"
 
     return ""
+
+
+def build_quake_embed(quake: EarthquakeEvent) -> Dict[str, Any]:
+    max_scale = quake.earthquake.max_scale
+    if max_scale >= 50:
+        color = 0xAD0202
+    elif max_scale >= 40:
+        color = 0xFF8000
+    elif max_scale >= 30:
+        color = 0xFFC400
+    else:
+        color = 0x00A6FF
+
+    scale_map = {
+        10: "1", 20: "2", 30: "3", 40: "4",
+        45: "5弱", 50: "5強", 55: "6弱", 60: "6強", 70: "7"
+    }
+    max_scale_str = scale_map.get(max_scale, "不明")
+
+    depth = quake.earthquake.hypocenter.depth
+
+    if depth == 0:
+        depth_str = "ごく浅い"
+    elif depth == -1:
+        depth_str = "不明"
+    else:
+        depth_str = f"{depth}km"
+
+    tsunami_info = quake.earthquake.domestic_tsunami
+    tsunami_text = {
+        "None": "この地震による津波の心配はありません。",
+        "Unknown": "津波の情報は不明です。今後の情報に注意してください。",
+        "Checking": "津波などの詳しい情報は追ってお知らせします。",
+        "NonEffective": "若干の海面変動があるかもしれませんが、被害の心配はありません。",
+        "Watch": "現在、津波注意報を発表中です。",
+        "Warning": "現在、津波予報等を発表中です。",
+    }.get(tsunami_info, tsunami_info)
+
+    quake_desc = tsunami_text
+
+    fields = [
+        {
+            "name": "最大震度",
+            "value": max_scale_str,
+            "inline": False
+        },
+        {
+            "name": "震源地",
+            "value": quake.earthquake.hypocenter.name,
+            "inline": True
+        },
+        {
+            "name": "M",
+            "value": f"{quake.earthquake.hypocenter.magnitude}",
+            "inline": True
+        },
+        {
+            "name": "深さ",
+            "value": depth_str,
+            "inline": True
+        },
+    ]
+
+    if quake.points:
+        points_text = build_intensity_text(quake.points, scale_map)
+        fields.append({
+            "name": "各地の震度",
+            "value": points_text,
+            "inline": False
+        })
+
+    fields.append({
+        "name": "発表時刻",
+        "value": quake.earthquake.time,
+        "inline": False
+    })
+
+    embed = {
+        "title": "地震情報",
+        "description": quake_desc,
+        "color": color,
+        "fields": fields,
+        "footer": {
+            "text": f"ソース\n{quake.issue.source}"
+        }
+    }
+
+    return {"embeds": [embed]}
+
+
+def build_intensity_text(points: list, scale_map: dict) -> str:
+    if not points:
+        return ""
+
+    intensity_groups = {}
+    for point in points:
+        scale = scale_map.get(point.scale, "?")
+        if scale not in intensity_groups:
+            intensity_groups[scale] = []
+
+        location = f"{point.pref}{point.addr}"
+        if location not in intensity_groups[scale]:
+            intensity_groups[scale].append(location)
+
+    scale_order = ["7", "6強", "6弱", "5強", "5弱", "4", "3", "2", "1"]
+    text_lines = []
+
+    for scale in scale_order:
+        if scale in intensity_groups:
+            locations = intensity_groups[scale]
+            text_lines.append(f"**【{scale}】**")
+
+            location_text = "\u3000".join(locations)
+            text_lines.append(location_text)
+
+    return "\n".join(text_lines)

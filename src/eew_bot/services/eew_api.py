@@ -59,7 +59,6 @@ async def handle_websocket_connection(websocket) -> None:
 
 
 async def connect_eew_with_retry(max_retries: Optional[int] = None) -> None:
-    """再接続機能付きWebSocket接続"""
     if EEW_API_URL is None:
         logger.error("Wolfx: URI is None")
         return
