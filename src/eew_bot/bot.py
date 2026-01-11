@@ -5,16 +5,17 @@ from eew_bot.utils.logger import logger
 
 async def main():
     logger.info("EQFast bot started")
-
-    while True:
-        try:
-            await connect_eew()
-        except Exception as e:
-            logger.exception(f"connect_eew crashed: {e}")
-
-        logger.warning("EEW connection closed. Reconnecting in 5s...")
-        await asyncio.sleep(5)
+    try:
+        await connect_eew()
+    except KeyboardInterrupt:
+        logger.info("Bot stopped by user")
+    except Exception as e:
+        logger.critical(f"Critical error: {e}", exc_info=True)
+        raise
 
 
 def start():
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        logger.info("Shutting down...")
