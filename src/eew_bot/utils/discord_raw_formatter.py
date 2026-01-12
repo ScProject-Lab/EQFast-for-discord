@@ -103,6 +103,8 @@ def build_quake_raw_text(quake: EarthquakeEvent) -> str:
     else:
         depth_str = f"{depth}km"
 
+    magnitude = format_number(quake.earthquake.hypocenter.magnitude)
+
     tsunami_info = quake.earthquake.domestic_tsunami
     tsunami_text = {
         "None": "この地震による津波の心配はありません。",
@@ -119,7 +121,7 @@ def build_quake_raw_text(quake: EarthquakeEvent) -> str:
 
     text += f"最大震度 {max_scale_str}\n"
     text += f"震源 {quake.earthquake.hypocenter.name}\n"
-    text += f"M {quake.earthquake.hypocenter.magnitude}\n"
+    text += f"M {magnitude}\n"
     text += f"深さ {depth_str}\n"
 
     if quake.points:
@@ -134,7 +136,6 @@ def build_quake_raw_text(quake: EarthquakeEvent) -> str:
 
 
 def build_intensity_detail_text(points: list, scale_map: dict) -> str:
-    """震度ごと・都道府県ごとに観測点を整形"""
     if not points:
         return ""
 
@@ -166,3 +167,10 @@ def build_intensity_detail_text(points: list, scale_map: dict) -> str:
             text_lines.append(locations_text)
 
     return "\n".join(text_lines)
+
+
+def format_number(n):
+    if isinstance(n, int) or n == int(n):
+        return f"{n:.1f}"
+    else:
+        return str(n)

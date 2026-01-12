@@ -18,11 +18,30 @@ async def process_quake_message(data: dict) -> None:
         if quake is None:
             return
 
-        logger.info(
-            f"地震情報 | 震源 {quake.earthquake.hypocenter.name} | "
-            f"M {quake.earthquake.hypocenter.magnitude} | "
-            f"最大震度 {quake.earthquake.max_scale}"
-        )
+        info_type = quake.issue.type
+
+        if info_type == "Other":
+            logger.debug(f"その他の情報のため無視: {info_type}")
+            return
+
+        if info_type == "ScalePrompt":
+            logger.info(f"震度速報 | 最大震度 {quake.earthquake.max_scale}")
+        elif info_type == "Destination":
+            logger.info(
+                f"震源情報 | 震源 {quake.earthquake.hypocenter.name} | "
+                f"M {quake.earthquake.hypocenter.magnitude}"
+            )
+        elif info_type == "Foreign":
+            logger.info(
+                f"遠地地震 | 震源 {quake.earthquake.hypocenter.name} | "
+                f"M {quake.earthquake.hypocenter.magnitude}"
+            )
+        else:
+            logger.info(
+                f"地震情報 ({info_type}) | 震源 {quake.earthquake.hypocenter.name} | "
+                f"M {quake.earthquake.hypocenter.magnitude} | "
+                f"最大震度 {quake.earthquake.max_scale}"
+            )
 
         payload = build_quake_embed(quake)
         text = build_quake_raw_text(quake)

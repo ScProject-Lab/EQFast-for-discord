@@ -1,6 +1,7 @@
 from typing import Dict, Any
 from eew_bot.models.eew import EEW
 from eew_bot.models.quake import EarthquakeEvent
+from datetime import datetime
 
 
 def build_eew_embed(eew: EEW) -> dict:
@@ -130,7 +131,13 @@ def build_quake_embed(quake: EarthquakeEvent) -> Dict[str, Any]:
         "Warning": "現在、津波予報等を発表中です。",
     }.get(tsunami_info, tsunami_info)
 
-    quake_desc = tsunami_text
+    quake_desc = f"{quake.earthquake.time}頃、{quake.earthquake.hypocenter.name}で地震がありました。"
+    quake_desc += tsunami_text
+
+    magnitude = format_number(quake.earthquake.hypocenter.magnitude)
+
+    raw_eq_time = datetime.strptime(quake.earthquake.time, "%Y/%m/%d %H:%M:%S")
+    eq_time = raw_eq_time.strftime("%d日 %H:%M")
 
     fields = [
         {
@@ -145,7 +152,7 @@ def build_quake_embed(quake: EarthquakeEvent) -> Dict[str, Any]:
         },
         {
             "name": "M",
-            "value": f"{quake.earthquake.hypocenter.magnitude}",
+            "value": magnitude,
             "inline": True
         },
         {
@@ -164,8 +171,8 @@ def build_quake_embed(quake: EarthquakeEvent) -> Dict[str, Any]:
         })
 
     fields.append({
-        "name": "発表時刻",
-        "value": quake.earthquake.time,
+        "name": "発生時刻",
+        "value": eq_time,
         "inline": False
     })
 
@@ -202,9 +209,16 @@ def build_intensity_text(points: list, scale_map: dict) -> str:
     for scale in scale_order:
         if scale in intensity_groups:
             locations = intensity_groups[scale]
-            text_lines.append(f"**【{scale}】**")
+            text_lines.append(f"**<震度{scale}>**")
 
             location_text = "\u3000".join(locations)
             text_lines.append(location_text)
 
     return "\n".join(text_lines)
+
+
+def format_number(n):
+    if isinstance(n, int) or n == int(n):
+        return f"{n:.1f}"
+    else:
+        return str(n)
