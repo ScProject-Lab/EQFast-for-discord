@@ -131,13 +131,13 @@ def build_quake_embed(quake: EarthquakeEvent) -> Dict[str, Any]:
         "Warning": "現在、津波予報等を発表中です。",
     }.get(tsunami_info, tsunami_info)
 
-    quake_desc = f"{quake.earthquake.time}頃、{quake.earthquake.hypocenter.name}で地震がありました。"
-    quake_desc += tsunami_text
-
     magnitude = format_number(quake.earthquake.hypocenter.magnitude)
 
     raw_eq_time = datetime.strptime(quake.earthquake.time, "%Y/%m/%d %H:%M:%S")
     eq_time = raw_eq_time.strftime("%d日 %H:%M")
+
+    quake_desc = f"{eq_time}頃、{quake.earthquake.hypocenter.name}で地震がありました。"
+    quake_desc += tsunami_text
 
     fields = [
         {
