@@ -7,10 +7,9 @@ venv/
 *.class
 *.log
 
-# Node.js（もしあれば）
 /node_modules/
+/.venv/
 
-# OS関連
 .DS_Store
 Thumbs.db
 
@@ -18,3 +17,4 @@ Thumbs.db
 .env
 noto.json
 Jma_tsunamiBOT.py
+.gitignore
