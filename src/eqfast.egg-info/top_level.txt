@@ -1,2 +1,1 @@
 eew_bot
-logs

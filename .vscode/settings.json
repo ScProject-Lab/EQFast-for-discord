@@ -1,42 +1,28 @@
 {
-    "git.ignoreLimitWarning": true,
-    "editor.semanticHighlighting.enabled": true,
-    "python.analysis.autoImportCompletions": false,
-    "python.testing.unittestArgs": [
-        "-v",
-        "-s",
-        ".",
-        "-p",
-        "*test.py"
-    ],
-    "python.testing.pytestEnabled": true,
-    "python.testing.unittestEnabled": false,
-    "cSpell.words": [
-        "dotenv",
-        "levelname",
-        "wsconnect"
-    ],
-    "python.languageServer": "Pylance",
-    "python.formatting.provider": "black",
-    "editor.formatOnSave": true,
-    "python.sortImports.args": [
-        "--profile",
-        "black"
-    ],
-    "python.linting.enabled": true,
-    "python.linting.flake8Enabled": true,
-    "python.linting.pylintEnabled": false,
-    "editor.largeFileOptimizations": false,
-    "flake8.args": [
-        "--ignore=E501"
-    ],
-    "files.autoSave": "afterDelay",
-    "emeraldwalk.runonsave": {
-        "commands": [
-            {
-                "match": "EQinfoBOT\\.py$",
-                "cmd": "systemctl restart eqfast.service && systemctl status eqfast.service | tee ~/eqfast.log"
-            }
-        ]
-    }
+  "git.ignoreLimitWarning": true,
+  "editor.semanticHighlighting.enabled": true,
+  "python.analysis.autoImportCompletions": false,
+  "python.testing.unittestArgs": ["-v", "-s", ".", "-p", "*test.py"],
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "cSpell.words": ["dotenv", "levelname", "wsconnect"],
+  "python.languageServer": "None",
+  "python.formatting.provider": "black",
+  "editor.formatOnSave": true,
+  "python.sortImports.args": ["--profile", "black"],
+  "python.linting.enabled": true,
+  "python.linting.flake8Enabled": true,
+  "python.linting.pylintEnabled": false,
+  "editor.largeFileOptimizations": false,
+  "flake8.args": ["--ignore=E501"],
+  "files.autoSave": "afterDelay",
+  "emeraldwalk.runonsave": {
+    "commands": [
+      {
+        "match": "EQinfoBOT\\.py$",
+        "cmd": "systemctl restart eqfast.service && systemctl status eqfast.service | tee ~/eqfast.log"
+      }
+    ]
+  },
+  "cursorpyright.analysis.autoImportCompletions": false
 }

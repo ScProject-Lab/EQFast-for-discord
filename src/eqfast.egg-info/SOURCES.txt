@@ -20,12 +20,15 @@ src/eew_bot/__pycache__/config.cpython-38.pyc
 src/eew_bot/models/eew.py
 src/eew_bot/models/quake.py
 src/eew_bot/models/__pycache__/eew.cpython-38.pyc
+src/eew_bot/models/__pycache__/quake.cpython-38.pyc
 src/eew_bot/parsers/eew_parser.py
 src/eew_bot/parsers/p2p_parser.py
 src/eew_bot/parsers/__pycache__/eew_parser.cpython-38.pyc
+src/eew_bot/parsers/__pycache__/p2p_parser.cpython-38.pyc
 src/eew_bot/services/eew_api.py
 src/eew_bot/services/quake_api.py
 src/eew_bot/services/__pycache__/eew_api.cpython-38.pyc
+src/eew_bot/services/__pycache__/quake_api.cpython-38.pyc
 src/eew_bot/state/last_event.py
 src/eew_bot/tests/ws_test_server.py
 src/eew_bot/utils/discord_formatter.py
