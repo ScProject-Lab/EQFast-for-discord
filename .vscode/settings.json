@@ -5,7 +5,14 @@
   "python.testing.unittestArgs": ["-v", "-s", ".", "-p", "*test.py"],
   "python.testing.pytestEnabled": true,
   "python.testing.unittestEnabled": false,
-  "cSpell.words": ["dotenv", "levelname", "wsconnect"],
+  "cSpell.words": [
+    "Chiiki",
+    "dotenv",
+    "levelname",
+    "Magunitude",
+    "Shindo",
+    "wsconnect"
+  ],
   "python.languageServer": "None",
   "python.formatting.provider": "black",
   "editor.formatOnSave": true,
