@@ -7,7 +7,7 @@ async def send_raw_message(text: str):
     if not RAW_DATA_WH:
         logger.error("Raw data webhook URL is None")
         return
-    
+
     payload = {
         "content": text
     }
