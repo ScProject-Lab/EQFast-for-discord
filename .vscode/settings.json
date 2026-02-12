@@ -6,7 +6,7 @@
   "python.testing.pytestEnabled": true,
   "python.testing.unittestEnabled": false,
   "cSpell.words": ["dotenv", "levelname", "wsconnect"],
-  "python.languageServer": "Pylance",
+  "python.languageServer": "None",
   "python.formatting.provider": "black",
   "editor.formatOnSave": true,
   "python.sortImports.args": ["--profile", "black"],
