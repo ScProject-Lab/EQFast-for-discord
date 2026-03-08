@@ -7,9 +7,8 @@ from eew_bot.config import EEW_API_URL
 from eew_bot.utils.logger import logger
 from eew_bot.parsers.eew_parser import parse_eew
 from eew_bot.utils.discord_webhook import send_webhook
-from eew_bot.utils.discord_formatter import build_eew_embed
+from eew_bot.utils.formatter import build_eew_embed, build_raw_text
 from eew_bot.utils.discord_raw_webhook import send_raw_message
-from eew_bot.utils.discord_raw_formatter import build_raw_text
 
 
 async def process_eew_message(data: dict) -> None:

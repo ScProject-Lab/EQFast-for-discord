@@ -7,9 +7,8 @@ from eew_bot.config import QUAKE_API_URL
 from eew_bot.utils.logger import logger
 from eew_bot.parsers.p2p_parser import parse_p2p_event
 from eew_bot.utils.discord_webhook import send_webhook
-from eew_bot.utils.discord_formatter import build_quake_embed
+from eew_bot.utils.formatter import build_quake_embed, build_quake_raw_text
 from eew_bot.utils.discord_raw_webhook import send_raw_message
-from eew_bot.utils.discord_raw_formatter import build_quake_raw_text
 
 
 async def process_quake_message(data: dict) -> None:
