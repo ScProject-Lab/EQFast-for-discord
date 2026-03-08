@@ -1,4 +1,3 @@
-# Java / Gradle
 /build/
 /out/
 /.gradle/
@@ -19,3 +18,5 @@ noto.json
 Jma_tsunamiBOT.py
 .gitignore
 .bat
+bot_log.txt
+logs/
