@@ -6,9 +6,9 @@ from typing import Optional
 from eew_bot.config import EEW_API_URL
 from eew_bot.utils.logger import logger
 from eew_bot.parsers.eew_parser import parse_eew
-from eew_bot.utils.discord_webhook import send_webhook
 from eew_bot.utils.formatter import build_eew_embed, build_raw_text
-from eew_bot.utils.discord_raw_webhook import send_raw_message
+from eew_bot.utils.webhook import send_webhook
+from eew_bot.config import EMBED_WH, RAW_WH
 
 
 async def process_eew_message(data: dict) -> None:
@@ -25,8 +25,8 @@ async def process_eew_message(data: dict) -> None:
         text = build_raw_text(eew)
 
         await asyncio.gather(
-            send_webhook(payload),
-            send_raw_message(text),
+            send_webhook(EMBED_WH, payload),
+            send_webhook(RAW_WH, {"content": text}),
             return_exceptions=True
         )
     except Exception as e:
