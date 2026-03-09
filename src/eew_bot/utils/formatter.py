@@ -42,21 +42,23 @@ def build_eew_embed(eew: EEW) -> dict:
 
     warn_desc = ""
 
-    if eew.is_plum:
-        eew_method = " (PLUM法による予測)"
-    else:
-        eew_method = ""
-
     warn_area_text = ""
     if eew.is_warn:
         warn_area_text = build_warn_area_text(eew.warn_area)
         warn_desc = "\u3000強い揺れに警戒"
 
+    if eew.is_plum:
+        eew_method = " (PLUM法による予測)"
+        desc = f"{eew.hypo_name}で地震{eew_method}{warn_desc}"
+    else:
+        eew_method = ""
+        desc = f"{eew.hypo_name}で地震{eew_method}{warn_desc}\nM {eew.magnitude}\u3000深さ {eew.depth}km"
+
     return {
         "embeds": [
             {
                 "title": title,
-                "description": f"{eew.hypo_name}で地震{eew_method}{warn_desc}\nM {eew.magnitude}\u3000深さ {eew.depth}km",
+                "description": desc,
                 "color": 0x9C0000 if eew.is_warn else 0xDB9D00,
                 "fields": [
                     {"name": "推定最大震度", "value": eew.max_shindo, "inline": False},
@@ -161,20 +163,23 @@ def build_raw_text(eew: EEW) -> str:
 
     warn_desc = ""
 
+    warn_area_text = ""
+    if eew.is_warn or eew.is_plum:
+        warn_area_text = build_warn_area_text(eew.warn_area)
+
+        if eew.is_warn:
+            warn_desc = "\u3000強い揺れに警戒"
+
     if eew.is_plum:
         eew_method = " (PLUM法による予測)"
+        desc = f"{eew.hypo_name}で地震{eew_method}{warn_desc}"
     else:
         eew_method = ""
-
-    warn_area_text = ""
-    if eew.is_warn:
-        warn_area_text = build_warn_area_text(eew.warn_area)
-        warn_desc = "\u3000強い揺れに警戒"
+        desc = f"{eew.hypo_name}で地震{eew_method}{warn_desc}\nM {eew.magnitude}\u3000深さ {eew.depth}km"
 
     return (
         f"{title}"
-        f"{eew.hypo_name}で地震{eew_method}{warn_desc}\n"
-        f"M {eew.magnitude:.1f}\u3000深さ {eew.depth}km\n"
+        f"{desc}\n"
         f"推定最大震度 {eew.max_shindo}\n"
         f"{warn_area_text}\n"
         f"発表時刻 {eew.report_time}\n"
@@ -226,7 +231,7 @@ def build_warn_area_text(warn_areas: list) -> str:
     if not shindo_map:
         return ""
 
-    text_lines = [""]
+    text_lines = ["\n【対象地域】"]
 
     shindo_order = ["7", "6強", "6弱", "5強", "5弱", "4", "3"]
 
@@ -235,7 +240,7 @@ def build_warn_area_text(warn_areas: list) -> str:
         if not areas:
             continue
 
-        text_lines.append(f"**[推定震度 {shindo}]**")
+        text_lines.append(f"[推定震度 {shindo}]")
 
         area_texts = []
         for chiiki, suffix in areas:
