@@ -1,144 +1,121 @@
 # EQFast for Discord
 
-(AIで生成されたREADMEファイルです。不備があればissueにお願いします。)
+Discordに各種地震情報を送信できるプロジェクトです。
 
-緊急地震速報（EEW）と地震速報をリアルタイムでDiscordに配信するボットです。
+- 緊急地震速報
+- 地震情報
 
-## 機能
+が受信できます。
 
-- **緊急地震速報（EEW）の配信** - 地震発生時の速報情報をリアルタイムで通知
-- **地震速報の配信** - 震度速報や確定震度情報を配信
-- **Webhookによる送信** - Discordのウェブフックを使用した動的なメッセージ送信
-- **非同期処理** - asyncioを使用した効率的なリアルタイム処理
+## 動作環境
 
-## システム構成
+### OS
 
-```text
-src/eew_bot/
-├── bot.py              - ボットのメインエントリーポイント
-├── config.py           - 環境変数の読み込みと設定
-├── models/             - データモデル
-│   ├── eew.py         - 緊急地震速報データモデル
-│   └── quake.py       - 地震速報データモデル
-├── parsers/            - データパーサー
-│   ├── eew_parser.py  - EEWデータのパース
-│   └── p2p_parser.py  - 地震速報データのパース
-├── services/           - 外部APIとの連携
-│   ├── eew_api.py     - EEW APIとの接続
-│   └── quake_api.py   - 地震速報APIとの接続
-├── utils/              - ユーティリティ関数
-│   ├── discord_formatter.py       - Embed形式でのメッセージ作成
-│   ├── discord_raw_formatter.py   - テキスト形式でのメッセージ作成
-│   ├── discord_webhook.py         - Embed送信用Webhook処理
-│   ├── discord_raw_webhook.py     - テキスト送信用Webhook処理
-│   ├── logger.py      - ログ設定
-│   └── retry.py       - リトライロジック
-└── state/              - 状態管理
-    └── last_event.py  - 最新イベント情報の管理
-```
+- Windows11/10
+- Linux
+- MacOS
 
-## 必要な環境
+### 環境
 
-- Python 3.8以上
-- pip または Poetry
+- Python 3.14.2(でのみ動作確認済み)
 
-## インストール
+- pip
 
-```bash
-# リポジトリのクローン
-git clone https://github.com/ScProject-Lab/EQFast-for-discord.git
-cd EQFast-for-discord
+## 実行方法
 
-# 依存パッケージのインストール
+### 依存関係のインストール
+
+```Bash
 pip install -e .
 ```
 
-## セットアップ
+### 実行
 
-### 環境変数の設定
-
-プロジェクトルートに `.env` ファイルを作成し、以下の環境変数を設定してください：
-
-```env
-DISCORD_TOKEN=your_discord_token_here
-RAW_DATA_WH=your_raw_data_webhook_url
-EEW_API_URL=your_eew_api_url
-QUAKE_API_URL=your_quake_api_url
-```
-
-### 各環境変数の説明
-
-- **DISCORD_TOKEN** - Discordボットのトークン
-- **RAW_DATA_WH** - 生データ送信用のDiscord Webhook URL
-- **EEW_API_URL** - 緊急地震速報APIのエンドポイント
-- **QUAKE_API_URL** - 地震速報APIのエンドポイント
-
-## 使用方法
-
-### ボットの起動
-
-```bash
-# eqfastコマンドで直接起動
-eqfast
-
-# または
+```Bash
 python -m eew_bot
-```
 
-### Windowsでの起動
-
-```bash
-# bot_start.batで起動
+# Windowsの場合はこっちもok
 ./bot_start.bat
 ```
 
-### Linuxでのサービス化
+## 導入方法
 
-```bash
-# サービスの再起動
-sudo systemctl restart eqfast.service
+サーバーのチャンネルから「チャンネルの編集」を選び、「連携サービス」を選択します。  
+ウェブフックを押して、「新しいウェブフック」を埋め込み用とプレーンテキスト用に2つ作成してください。名前とチャンネルを任意のものに設定し、それぞれのウェブフックURLをコピーしてください。
+
+プロジェクトのルートに`.env`を作成し、
+
+```text
+EMBED_WH = "埋め込み用URL"
+RAW_WH = "プレーンテキスト用URL"
+EEW_API_URL = "wss://ws-api.wolfx.jp/jma_eew"
+QUAKE_API_URL = "wss://api.p2pquake.net/v2/ws"
 ```
 
-## 依存ライブラリ
+を入力してください。(APIのURLを.envにする必要はなかったかも)  
 
-- **websockets** - WebSocketクライアント通信
-- **python-dotenv** - 環境変数の読み込み
-- **aiohttp** - 非同期HTTPクライアント
+## 構成とか
 
-## プロジェクト構成情報
+言語 : `Python`
 
-- **プロジェクト名**: eqfast
-- **バージョン**: 0.1.0
-- **メインモジュール**: eew_bot
+ファイル構造
 
-## ログ
-
-ボットの実行ログは `logs/` ディレクトリに記録されます。また、 `bot_log.txt` に日次ログも出力されます。
+```text
+EQFast-for-Discord
+│  .env
+│  .gitignore
+│  bot_log.txt
+│  bot_start.bat
+│  LICENSE
+│  pyproject.toml
+│  README.md
+│  update_bot.bat
+│
+├─.vscode
+│      settings.json
+│      tasks.json
+│
+├─scripts
+│      test_discord.py
+│      __init__.py
+│
+└─src
+    ├─eew_bot
+    │  │  bot.py
+    │  │  config.py
+    │  │  __main__.py
+    │  │
+    │  ├─models
+    │  │      eew.py
+    │  │      quake.py
+    │  │
+    │  ├─parsers
+    │  │      eew_parser.py
+    │  │      p2p_parser.py
+    │  │
+    │  ├─services
+    │  │      eew_api.py
+    │  │      quake_api.py
+    │  │
+    │  ├─state
+    │  │      last_event.py
+    │  │
+    │  ├─tests
+    │  │      ws_test_server.py
+    │  │
+    │  └─utils
+    │          formatter.py
+    │          logger.py
+    │          retry.py
+    │          webhook.py
+    │
+    └─logs
+```
 
 ## ライセンス
 
-[LICENSE](LICENSE) ファイルを参照してください。
-
-## 開発
-
-### テストの実行
-
-```bash
-python -m pytest scripts/test_discord.py
-```
-
-### WebSocketテストサーバー
-
-```bash
-python src/eew_bot/tests/ws_test_server.py
-```
-
-## トラブルシューティング
-
-- ボットが起動しない場合は、環境変数が正しく設定されているか確認してください。
-- WebSocketの接続エラーが発生した場合は、API URLが正しいか確認してください。
-- Discordへのメッセージ送信が失敗する場合は、Webhook URLとボットの権限を確認してください。
+[LICENSE](LICENSE)を参照してください  
 
 ## 問い合わせ
 
-問題や機能リクエストは、GitHubのIssueセクションで受け付けています。
+Issueで受け付けています。
