@@ -1,22 +1,29 @@
-/build/
-/out/
-/.gradle/
-/.idea/
+
+# Python
+
 venv/
-*.class
+.venv/
+__pycache__/
+*.pyc
 *.log
 
-/node_modules/
-/.venv/
+
+# OS
 
 .DS_Store
 Thumbs.db
 
-2024ishikawa.xml
+
+# Project-specific secrets
+
 .env
-noto.json
-Jma_tsunamiBOT.py
-.gitignore
-.bat
+*.bat
 bot_log.txt
 logs/
+
+
+# Data / Config (secrets)
+
+2024ishikawa.xml
+noto.json
+Jma_tsunamiBOT.py
