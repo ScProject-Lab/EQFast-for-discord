@@ -1,3 +1,3 @@
 @echo off
-cd /d %~dp0
-pythonw -m eew_bot >> bot_log.txt 2>&1
+cd /d %~dp0\src
+"C:\Users\s-ryu\AppData\Local\Programs\Python\Python314\pythonw.exe" -m eew_bot
