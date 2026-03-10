@@ -464,7 +464,7 @@ def build_detailscale_raw(quake: EarthquakeEvent) -> str:
     quake_desc = f"{eq_time}頃、{quake.earthquake.hypocenter.name}で地震がありました。"
     quake_desc += tsunami_str
 
-    text = "---震度・震源に関する情報---\n"
+    text = "---地震情報---\n"
     text += f"{quake_desc}\n\n"
 
     text += f"最大震度 {max_scale_str}\n"

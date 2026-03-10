@@ -6,50 +6,38 @@ from eew_bot.utils.webhook import send_webhook
 from eew_bot.config import EMBED_WH, RAW_WH
 
 dummy_data = {
-    "type": "jma_eew",
-    "Title": "緊急地震速報（予報）",
-    "CodeType": "Ｍ、最大予測震度及び主要動到達予測時刻の緊急地震速報",
-    "Issue": {
-        "Source": "大阪",
-        "Status": "通常"
-    },
-    "EventID": "20260308221821",
-    "Serial": 5,
-    "AnnouncedTime": "2026/03/08 22:18:51",
-    "OriginTime": "2026/03/08 22:18:19",
-    "Hypocenter": "岩手県内陸北部",
-    "Latitude": 39.7,
-    "Longitude": 141,
-    "Magunitude": 1,
-    "Depth": 10,
-    "MaxIntensity": "4",
-    "Accuracy": {
-        "Epicenter": "P 波／S 波レベル超え、IPF 法（1 点）、または仮定震源要素",
-        "Depth": "P 波／S 波レベル超え、IPF 法（1 点）、または仮定震源要素",
-        "Magnitude": "P 波／S 波レベル超え、または仮定震源要素"
-    },
-    "MaxIntChange": {
-        "String": "ほとんど変化なし",
-        "Reason": "不明、未設定時、キャンセル時"
-    },
-    "WarnArea": [
-        {
-            "Chiiki": "岩手県内陸北部",
-            "Shindo1": "4",
-            "Shindo2": "不明",
-            "Time": "221822",
-            "Type": "予報",
-            "Arrive": "主要動到達時刻の予測なし（PLUM 法による予測）"
-        }
-    ],
-    "isSea": False,
-    "isTraining": False,
-    "isAssumption": True,
-    "isWarn": False,
-    "isFinal": True,
-    "isCancel": False,
-    "OriginalText": "36 04 00 260308221851 C11 260308221819 ND20260308221821 NCN905 JD////////////// JN005 212 N397 E1410 010 10 04 RK11811 RT/09// RC0//// EBI 212 S04// 221822 09 9999=",
-    "Pond": "11"
+  "Title": "緊急地震速報（予報）",
+  "CodeType": "Ｗ、警報、最大予測震度及び主要動到達予測時刻",
+  "Issue": {
+    "Source": "東京",
+    "Status": "通常"
+  },
+  "EventID": "20260209170500_1",
+  "Serial": 1,
+  "AnnouncedTime": "2011/03/11 14:48:11",
+  "OriginTime": "2011/03/11 14:48:10",
+  "Hypocenter": "東北地方",
+  "Latitude": 38.1,
+  "Longitude": 142.9,
+  "Magunitude": 1.0,
+  "Depth": 10,
+  "MaxIntensity": "5弱",
+  "Accuracy": {
+    "Epicenter": "IPF 法（5 点以上）",
+    "Depth": "IPF 法（5 点以上）",
+    "Magnitude": "全点全相"
+  },
+  "MaxIntChange": {
+    "String": "増大",
+    "Reason": "巨大地震による再計算"
+  },
+  "WarnArea": [],
+  "isSea": False,
+  "isTraining": False,
+  "isAssumption": True,
+  "isWarn": False,
+  "isFinal": False,
+  "isCancel": False
 }
 
 
