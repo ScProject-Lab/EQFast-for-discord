@@ -356,7 +356,7 @@ def build_intensity_detail_text(points: list, scale_map: dict, max_per_scale: in
                 shown_count += len(shown)
 
             omitted = total - max_per_scale
-            text_lines.append(f"…他{omitted}点")
+            text_lines.append(f"…他{omitted}項目")
 
     return "\n".join(text_lines)
 
