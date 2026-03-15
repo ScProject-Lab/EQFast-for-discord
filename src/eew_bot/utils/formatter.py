@@ -337,17 +337,14 @@ def build_intensity_detail_text(points: list, scale_map: dict, max_per_scale: in
 
         text_lines.append(f"\n<震度{scale}>")
 
-        # この震度の全観測点数を集計
         all_locations = [addr for locs in intensity_groups[scale].values() for addr in locs]
         total = len(all_locations)
 
         if total <= max_per_scale:
-            # 少ない場合はそのまま（元の動作）
             for pref, locations in intensity_groups[scale].items():
                 text_lines.append(f"[{pref}]")
                 text_lines.append("\u3000".join(locations))
         else:
-            # 超えたら上位N点だけ表示して残りをまとめる
             shown_count = 0
             for pref, locations in intensity_groups[scale].items():
                 if shown_count >= max_per_scale:
