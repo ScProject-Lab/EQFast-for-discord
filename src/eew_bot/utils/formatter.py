@@ -5,8 +5,15 @@ from typing import Dict, Any
 
 # 変数たち
 scale_map = {
-    10: "1", 20: "2", 30: "3", 40: "4",
-    45: "5弱", 50: "5強", 55: "6弱", 60: "6強", 70: "7"
+    10: "1",
+    20: "2",
+    30: "3",
+    40: "4",
+    45: "5弱",
+    50: "5強",
+    55: "6弱",
+    60: "6強",
+    70: "7",
 }
 
 tsunami_text = {
@@ -47,9 +54,12 @@ def build_eew_embed(eew: EEW) -> dict:
         warn_area_text = build_warn_area_text(eew.warn_area)
         warn_desc = "\u3000強い揺れに警戒"
 
-    if eew.is_plum:
+    if not eew.is_warn and eew.max_shindo == "5弱":
+        eew_method = " (レベル法による予測)"
+        desc = f"{eew.hypo_name}で揺れ{eew_method}{warn_desc}"
+    elif eew.is_plum:
         eew_method = " (PLUM法による予測)"
-        desc = f"{eew.hypo_name}で地震{eew_method}{warn_desc}"
+        desc = f"{eew.hypo_name}で揺れ{eew_method}{warn_desc}"
     else:
         eew_method = ""
         desc = f"{eew.hypo_name}で地震{eew_method}{warn_desc}\nM {eew.magnitude}\u3000深さ {eew.depth}km"
@@ -64,7 +74,7 @@ def build_eew_embed(eew: EEW) -> dict:
                     {"name": "推定最大震度", "value": eew.max_shindo, "inline": False},
                     {"name": "対象地域", "value": warn_area_text, "inline": False},
                     {"name": "発表時刻", "value": eew.report_time, "inline": False},
-                ]
+                ],
             }
         ]
     }
@@ -104,53 +114,28 @@ def build_quake_embed(quake: EarthquakeEvent) -> Dict[str, Any]:
     quake_desc += tsunami_str
 
     fields = [
-        {
-            "name": "最大震度",
-            "value": max_scale_str,
-            "inline": False
-        },
-        {
-            "name": "震源地",
-            "value": quake.earthquake.hypocenter.name,
-            "inline": True
-        },
-        {
-            "name": "M",
-            "value": magnitude,
-            "inline": True
-        },
-        {
-            "name": "深さ",
-            "value": depth_str,
-            "inline": True
-        },
+        {"name": "最大震度", "value": max_scale_str, "inline": False},
+        {"name": "震源地", "value": quake.earthquake.hypocenter.name, "inline": True},
+        {"name": "M", "value": magnitude, "inline": True},
+        {"name": "深さ", "value": depth_str, "inline": True},
     ]
 
     if quake.points:
         points_text = build_intensity_text(quake.points, scale_map)
-        fields.append({
-            "name": "各地の震度",
-            "value": points_text,
-            "inline": False
-        })
+        fields.append({"name": "各地の震度", "value": points_text, "inline": False})
 
-    fields.append({
-        "name": "発生時刻",
-        "value": eq_time,
-        "inline": False
-    })
+    fields.append({"name": "発生時刻", "value": eq_time, "inline": False})
 
     embed = {
         "title": "地震情報",
         "description": quake_desc,
         "color": color,
         "fields": fields,
-        "footer": {
-            "text": f"ソース\n{quake.issue.source}"
-        }
+        "footer": {"text": f"ソース\n{quake.issue.source}"},
     }
 
     return {"embeds": [embed]}
+
 
 # rawの方
 
@@ -158,29 +143,39 @@ def build_quake_embed(quake: EarthquakeEvent) -> Dict[str, Any]:
 def build_raw_text(eew: EEW) -> str:
     kind = "警報" if eew.is_warn else "予報"
     final = " - 最終" if eew.is_final else ""
+    cancel = "[キャンセル]\u3000" if eew.is_cancel else ""
 
-    title = f"---緊急地震速報（{kind}） 第{eew.report_no}報{final}---\n"
+    title = f"---{cancel}緊急地震速報（{kind}） 第{eew.report_no}報{final}---\n"
 
     warn_desc = ""
 
     warn_area_text = ""
     if eew.is_warn or eew.is_plum:
-        warn_area_text = build_warn_area_text(eew.warn_area)
+        warn_area_text = f"{build_warn_area_text(eew.warn_area)}\n"
 
         if eew.is_warn:
             warn_desc = "\u3000強い揺れに警戒"
 
-    if eew.is_plum:
+    if eew.is_cancel:
+        max_shindo_desc = ""
+        desc = "\n!--先ほどの緊急地震速報はキャンセルされました。--!"
+    elif not eew.is_warn and eew.max_shindo == "5弱":
+        eew_method = " (レベル法による予測)"
+        desc = f"{eew.hypo_name}で揺れ{eew_method}{warn_desc}"
+        max_shindo_desc = f"\n推定最大震度 {eew.max_shindo}\n"
+    elif eew.is_plum:
         eew_method = " (PLUM法による予測)"
-        desc = f"{eew.hypo_name}で地震{eew_method}{warn_desc}"
+        desc = f"{eew.hypo_name}で揺れ{eew_method}{warn_desc}\n"
+        max_shindo_desc = f"\n推定最大震度 {eew.max_shindo}\n"
     else:
         eew_method = ""
         desc = f"{eew.hypo_name}で地震{eew_method}{warn_desc}\nM {eew.magnitude}\u3000深さ {eew.depth}km"
+        max_shindo_desc = f"\n推定最大震度 {eew.max_shindo}\n"
 
     return (
         f"{title}"
-        f"{desc}\n"
-        f"推定最大震度 {eew.max_shindo}\n"
+        f"{desc}"
+        f"{max_shindo_desc}"
         f"{warn_area_text}\n"
         f"発表時刻 {eew.report_time}\n"
         "ソース:Wolfx Earthquake API"
@@ -203,6 +198,7 @@ def build_quake_raw_text(quake: EarthquakeEvent) -> str:
         return build_foreign_raw(quake)
     else:
         return "不明な情報種別です。"
+
 
 # 共通の関数
 
@@ -281,6 +277,7 @@ def format_depth(depth: int) -> str:
 
     return depth_str
 
+
 # embedのみの関数
 
 
@@ -311,10 +308,11 @@ def build_intensity_text(points: list, scale_map: dict) -> str:
 
     return "\n".join(text_lines)
 
+
 # rawのみの関数
 
 
-def build_intensity_detail_text(points: list, scale_map: dict) -> str:
+def build_intensity_detail_text(points: list, scale_map: dict, max_per_scale: int = 5) -> str:
     if not points:
         return ""
 
@@ -339,13 +337,32 @@ def build_intensity_detail_text(points: list, scale_map: dict) -> str:
 
         text_lines.append(f"\n<震度{scale}>")
 
-        for pref, locations in intensity_groups[scale].items():
-            text_lines.append(f"[{pref}]")
+        # この震度の全観測点数を集計
+        all_locations = [addr for locs in intensity_groups[scale].values() for addr in locs]
+        total = len(all_locations)
 
-            locations_text = "\u3000".join(locations)
-            text_lines.append(locations_text)
+        if total <= max_per_scale:
+            # 少ない場合はそのまま（元の動作）
+            for pref, locations in intensity_groups[scale].items():
+                text_lines.append(f"[{pref}]")
+                text_lines.append("\u3000".join(locations))
+        else:
+            # 超えたら上位N点だけ表示して残りをまとめる
+            shown_count = 0
+            for pref, locations in intensity_groups[scale].items():
+                if shown_count >= max_per_scale:
+                    break
+                remaining_slots = max_per_scale - shown_count
+                shown = locations[:remaining_slots]
+                text_lines.append(f"[{pref}]")
+                text_lines.append("\u3000".join(shown))
+                shown_count += len(shown)
+
+            omitted = total - max_per_scale
+            text_lines.append(f"…他{omitted}点")
 
     return "\n".join(text_lines)
+
 
 # 震度速報
 
@@ -368,7 +385,7 @@ def build_scaleprompt_raw(quake: EarthquakeEvent) -> str:
     text += f"最大震度 {max_scale_str}\n"
 
     if quake.points:
-        text += "\n【地域ごとの震度】\n"
+        text += "\n【地域ごとの震度】"
         text += build_intensity_detail_text(quake.points, scale_map)
 
     text += f"\n\n発生時刻 {raw_eq_time.strftime('%Y年%m月%d日 %H:%M')}\n"
@@ -376,6 +393,7 @@ def build_scaleprompt_raw(quake: EarthquakeEvent) -> str:
     text += "\n\n[Generated by EQFast]"
 
     return text
+
 
 # 震源情報
 
@@ -408,6 +426,7 @@ def build_destination_raw(quake: EarthquakeEvent) -> str:
 
     return text
 
+
 # 震度・震源情報
 
 
@@ -436,14 +455,15 @@ def build_scaleanddestination_raw(quake: EarthquakeEvent) -> str:
     text += f"深さ {depth_str}\n"
 
     if quake.points:
-        text += "\n【詳しい震度】\n"
+        text += "\n【詳しい震度】"
         text += build_intensity_detail_text(quake.points, scale_map)
 
-    text += f"発生時刻 {raw_eq_time.strftime('%Y年%m月%d日 %H:%M')}\n"
+    text += f"\n\n発生時刻 {raw_eq_time.strftime('%Y年%m月%d日 %H:%M')}\n"
     text += f"ソース {quake.issue.source}・P2P地震情報 API"
     text += "\n\n[Generated by EQFast]"
 
     return text
+
 
 # 各地の震度
 
@@ -473,14 +493,15 @@ def build_detailscale_raw(quake: EarthquakeEvent) -> str:
     text += f"深さ {depth_str}\n"
 
     if quake.points:
-        text += "\n【観測点ごとの震度】\n"
+        text += "\n【観測点ごとの震度】"
         text += build_intensity_detail_text(quake.points, scale_map)
 
-    text += f"\n発生時刻 {raw_eq_time.strftime('%Y年%m月%d日 %H:%M')}\n"
+    text += f"\n\n発生時刻 {raw_eq_time.strftime('%Y年%m月%d日 %H:%M')}\n"
     text += f"ソース {quake.issue.source}・P2P地震情報 API"
     text += "\n\n[Generated by EQFast]"
 
     return text
+
 
 # 遠地地震
 
@@ -491,7 +512,9 @@ def build_foreign_raw(quake: EarthquakeEvent) -> str:
     tsunami_str = tsunami_text.get(tsunami_info, tsunami_info)
 
     foreign_tsunami_info = quake.earthquake.foreign_tsunami
-    foreign_tsunami_str = foreign_tsunami_text.get(foreign_tsunami_info, foreign_tsunami_info)
+    foreign_tsunami_str = foreign_tsunami_text.get(
+        foreign_tsunami_info, foreign_tsunami_info
+    )
 
     depth = quake.earthquake.hypocenter.depth
     depth_str = format_depth(depth)
@@ -513,10 +536,11 @@ def build_foreign_raw(quake: EarthquakeEvent) -> str:
     text += f"M {magnitude}\n"
     text += f"深さ {depth_str}\n"
 
-    text += f"\n発生時刻 {raw_eq_time.strftime('%Y年%m月%d日 %H:%M')}\n"
+    text += f"\n\n発生時刻 {raw_eq_time.strftime('%Y年%m月%d日 %H:%M')}\n"
     text += f"ソース {quake.issue.source}・P2P地震情報 API"
     text += "\n\n[Generated by EQFast]"
 
     return text
+
 
 # その他
